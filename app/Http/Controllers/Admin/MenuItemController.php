@@ -41,7 +41,17 @@ class MenuItemController extends Controller
             $data['image_path'] = $request->file('image')->store('menu-items', 'public');
         }
 
+        $customizations = $this->parseCustomizations($request->input('removable_ingredients'), $request->input('extra_ingredients'));
+        $data['customizations'] = $customizations;
+
+        $categoryObj = Category::find($data['category_id']);
+        if ($categoryObj) {
+            $data['category'] = $categoryObj->name;
+        }
+
         unset($data['image']);
+        unset($data['removable_ingredients']);
+        unset($data['extra_ingredients']);
         MenuItem::create($data);
 
         return redirect()->route('admin.menu-items.index')
@@ -74,7 +84,17 @@ class MenuItemController extends Controller
             $data['image_path'] = $request->file('image')->store('menu-items', 'public');
         }
 
+        $customizations = $this->parseCustomizations($request->input('removable_ingredients'), $request->input('extra_ingredients'));
+        $data['customizations'] = $customizations;
+
+        $categoryObj = Category::find($data['category_id']);
+        if ($categoryObj) {
+            $data['category'] = $categoryObj->name;
+        }
+
         unset($data['image']);
+        unset($data['removable_ingredients']);
+        unset($data['extra_ingredients']);
         $menuItem->update($data);
 
         return redirect()->route('admin.menu-items.index')
@@ -90,5 +110,38 @@ class MenuItemController extends Controller
 
         return redirect()->route('admin.menu-items.index')
             ->with('success', 'Producto eliminado.');
+    }
+
+    private function parseCustomizations($removableText, $extrasText)
+    {
+        $removables = [];
+        if ($removableText) {
+            $lines = explode("\n", str_replace("\r", "", $removableText));
+            foreach ($lines as $line) {
+                $line = trim($line);
+                if ($line) $removables[] = $line;
+            }
+        }
+
+        $extras = [];
+        if ($extrasText) {
+            $lines = explode("\n", str_replace("\r", "", $extrasText));
+            foreach ($lines as $line) {
+                $parts = explode('|', $line);
+                if (count($parts) >= 2) {
+                    $extras[] = [
+                        'name' => trim($parts[0]),
+                        'price' => (float) trim($parts[1])
+                    ];
+                }
+            }
+        }
+
+        if (empty($removables) && empty($extras)) return null;
+
+        return [
+            'removable' => $removables,
+            'extras' => $extras
+        ];
     }
 }

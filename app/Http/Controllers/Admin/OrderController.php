@@ -20,9 +20,10 @@ class OrderController extends Controller
         $orders = $query->paginate(20);
 
         $counts = [
-            'all'       => Order::count(),
-            'pending'   => Order::where('status', 'pending')->count(),
-            'preparing' => Order::where('status', 'preparing')->count(),
+            'all'             => Order::count(),
+            'pending_payment' => Order::where('status', 'pending_payment')->count(),
+            'pending'         => Order::where('status', 'pending')->count(),
+            'preparing'       => Order::where('status', 'preparing')->count(),
             'on_way'    => Order::where('status', 'on_way')->count(),
             'delivered' => Order::where('status', 'delivered')->count(),
         ];
@@ -39,7 +40,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, Order $order)
     {
         $request->validate([
-            'status' => 'required|in:pending,preparing,on_way,delivered',
+            'status' => 'required|in:pending_payment,pending,preparing,on_way,delivered',
         ]);
 
         $order->update(['status' => $request->status]);

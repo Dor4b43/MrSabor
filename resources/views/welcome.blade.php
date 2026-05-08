@@ -6,6 +6,8 @@
     <title>Mr. Sabor Burgers — Comida Artesanal</title>
     <meta name="description" content="Mr. Sabor Burgers — La mejor comida artesanal de la ciudad. Burgers, Salchipapas y más. Pide para llevar o a domicilio.">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
 /* ── RESET LOCAL ───────────────────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -509,6 +511,66 @@
 }
 .lp-footer span { color: #E07820; font-weight: 600; }
 
+/* ── PRODUCT MODAL ─────────────────────────────────────────── */
+.product-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    z-index: 2000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.product-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.product-modal {
+    background: var(--bg-card, #1A0E06); border: 1px solid rgba(224,120,32,0.3);
+    border-radius: 20px; width: 90%; max-width: 500px;
+    overflow: hidden; transform: translateY(20px); transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6); position: relative;
+}
+.product-modal-overlay.active .product-modal { transform: translateY(0); }
+.product-modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(0,0,0,0.5); color: #fff; width: 32px; height: 32px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border: none; font-size: 1.2rem; z-index: 10;
+}
+.product-modal-close:hover { background: rgba(224,120,32,0.8); }
+.product-modal-img-wrap { height: 250px; background: #0E0A06; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.product-modal-img { width: 100%; height: 100%; object-fit: cover; }
+.product-modal-body { padding: 2rem; }
+.product-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #F2E8D5; letter-spacing: 1.5px; margin-bottom: 0.5rem; line-height: 1; }
+.product-modal-price { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #F09040; margin-bottom: 1rem; }
+.product-modal-desc { color: #8A7460; font-size: 0.95rem; line-height: 1.6; }
+
+/* ── AUTH MODAL ────────────────────────────────────────────── */
+.auth-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); backdrop-filter: blur(8px);
+    z-index: 3000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.auth-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.auth-modal {
+    background: var(--bg-mid, #22160D); border: 1px solid rgba(224,120,32,0.3);
+    border-radius: 20px; width: 90%; max-width: 400px;
+    padding: 2.5rem 2rem; position: relative;
+    transform: translateY(20px); transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.7);
+}
+.auth-modal-overlay.active .auth-modal { transform: translateY(0); }
+.auth-modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(0,0,0,0.5); color: #fff; width: 32px; height: 32px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border: none; font-size: 1.2rem; transition: background 0.2s;
+}
+.auth-modal-close:hover { background: rgba(224,120,32,0.8); }
+.auth-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; color: #F2E8D5; letter-spacing: 2px; text-align: center; margin-bottom: 0.5rem; line-height: 1; }
+.auth-modal-subtitle { text-align: center; color: #8A7460; font-size: 0.9rem; margin-bottom: 1.5rem; }
+.auth-toggle-link { color: #F09040; cursor: pointer; text-decoration: none; font-weight: 600; transition: color 0.2s; }
+.auth-toggle-link:hover { color: #E8B84A; }
+.form-input.modal-input { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); width: 100%; padding: 0.875rem 1rem; border-radius: 8px; color: #F2E8D5; font-family: 'Poppins', sans-serif; }
+.form-input.modal-input:focus { border-color: #E07820; background: rgba(224,120,32,0.08); outline: none; }
+.form-label { display: block; font-size: 0.78rem; font-weight: 700; color: #8A7460; margin-bottom: 0.45rem; text-transform: uppercase; letter-spacing: 0.8px; }
+
 /* float animation */
 @keyframes float {
     0%, 100% { transform: translateY(-50%) translateY(0); }
@@ -521,7 +583,38 @@
     .order-type-btn { padding: 0.75rem 1.25rem; font-size: 0.85rem; }
     .lp-nav-links { display: none; }
 }
-    </style>
+@media (min-width: 769px) {
+    .user-greeting-nav { display: block !important; }
+}
+/* ── PRODUCT MODAL ─────────────────────────────────────────── */
+.product-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    z-index: 2000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.product-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.product-modal {
+    background: var(--bg-card, #1A0E06); border: 1px solid rgba(224,120,32,0.3);
+    border-radius: 20px; width: 90%; max-width: 500px;
+    overflow: hidden; transform: translateY(20px); transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6); position: relative;
+}
+.product-modal-overlay.active .product-modal { transform: translateY(0); }
+.product-modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(0,0,0,0.5); color: #fff; width: 32px; height: 32px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border: none; font-size: 1.2rem; z-index: 10;
+}
+.product-modal-close:hover { background: rgba(224,120,32,0.8); }
+.product-modal-img-wrap { height: 250px; background: #0E0A06; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.product-modal-img { width: 100%; height: 100%; object-fit: cover; }
+.product-modal-body { padding: 2rem; }
+.product-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #F2E8D5; letter-spacing: 1.5px; margin-bottom: 0.5rem; line-height: 1; }
+.product-modal-price { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #F09040; margin-bottom: 1rem; }
+.product-modal-desc { color: #8A7460; font-size: 0.95rem; line-height: 1.6; }
+</style>
 </head>
 <body style="background:#0E0A06;">
 
@@ -553,15 +646,23 @@
         @endif
     </ul>
 
-    <div class="lp-nav-right">
+    <div class="lp-nav-right" style="display:flex; align-items:center; gap:0.5rem;">
         @auth
-            <a href="{{ route('dashboard') }}" class="btn btn-primary btn-sm">🔥 Pedir ahora</a>
+            <div class="user-greeting-nav" style="font-size:0.85rem; color:#8A7460; margin-right:0.5rem; display:none;">
+                Hola, <strong style="color:#F2E8D5;">{{ explode(' ', Auth::user()->name)[0] }}</strong>
+            </div>
+            <a href="#menu" class="btn btn-primary btn-sm" title="Ir al menú"><i class="ph ph-fire"></i> Pedir</a>
+            <a href="{{ route('profile.edit') }}" class="btn btn-ghost btn-sm" title="Mi Perfil"><i class="ph ph-user"></i> Perfil</a>
             @if(Auth::user()->isAdmin())
-                <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-sm">⚙️ Admin</a>
+                <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-sm"><i class="ph ph-gear"></i> Admin</a>
             @endif
+            <form method="POST" action="{{ route('logout') }}" style="display:inline;">
+                @csrf
+                <button type="submit" class="btn btn-ghost btn-sm" title="Cerrar Sesión">Salir</button>
+            </form>
         @else
-            <a href="{{ route('login') }}"    class="btn btn-ghost btn-sm">Entrar</a>
-            <a href="{{ route('register') }}" class="btn btn-primary btn-sm">Crear cuenta</a>
+            <a onclick="openAuthModal('login')" class="btn btn-ghost btn-sm" style="cursor:pointer;">Entrar</a>
+            <a onclick="openAuthModal('register')" class="btn btn-primary btn-sm" style="cursor:pointer;">Crear cuenta</a>
         @endauth
     </div>
 </nav>
@@ -575,7 +676,7 @@
 
     <div class="lp-hero-content">
         <div class="lp-hero-eyebrow">
-            🔥 Comida Artesanal Premium
+            <i class="ph ph-fire"></i> Comida Artesanal Premium
         </div>
 
         <h1 class="lp-hero-headline">
@@ -587,30 +688,13 @@
             Todo hecho con ingredientes frescos y el toque especial de Mr. Sabor.
         </p>
 
-        {{-- Botones tipo pedido --}}
-        <div class="order-type-group">
-            @auth
-                <a href="{{ route('dashboard') }}" class="order-type-btn primary">
-                    <span class="order-type-icon">🛵</span> A domicilio
-                </a>
-                <a href="{{ route('dashboard') }}" class="order-type-btn secondary">
-                    <span class="order-type-icon">🏠</span> Para llevar
-                </a>
-            @else
-                <a href="{{ route('register') }}" class="order-type-btn primary">
-                    <span class="order-type-icon">🛵</span> A domicilio
-                </a>
-                <a href="{{ route('register') }}" class="order-type-btn secondary">
-                    <span class="order-type-icon">🏠</span> Para llevar
-                </a>
-            @endauth
-        </div>
+
 
         {{-- Info pills --}}
         <div class="hero-info-pills">
-            <span class="hero-info-pill">⏰ Lun–Dom: 11:00am – 10:00pm</span>
-            <span class="hero-info-pill">📍 Tu ciudad</span>
-            <span class="hero-info-pill">📞 WhatsApp disponible</span>
+            <span class="hero-info-pill">⏰ Lun–Dom: 6:00pm – 11:00pm</span>
+            <span class="hero-info-pill">📍 Neiva-Huila</span>
+            <span class="hero-info-pill">📞 3102632358</span>
         </div>
     </div>
 
@@ -632,12 +716,12 @@
             <div class="carousel-track" id="carousel-track">
                 @foreach($promotions as $promo)
                 <div class="carousel-slide">
-                    @if($promo->image_path)
-                        <img src="{{ Storage::url($promo->image_path) }}" class="slide-bg" alt="{{ $promo->title }}">
+                    @if($promo->image_url)
+                        <img src="{{ $promo->image_url }}" class="slide-bg" alt="{{ $promo->title }}">
                         <div class="slide-overlay"></div>
                     @else
                         <div class="slide-noimag"></div>
-                        <div class="slide-deco">🍔</div>
+                        <div class="slide-deco"><i class="ph ph-hamburger"></i></div>
                         <div class="slide-overlay" style="background:linear-gradient(90deg,rgba(14,10,6,0.92) 0%,rgba(14,10,6,0.6) 60%,transparent 100%);"></div>
                     @endif
                     <div class="slide-content">
@@ -674,12 +758,17 @@
     <div class="cat-bar" id="cat-bar">
         @php
             $catIcons = [
-                'Burgers'      => '🍔',
-                'Salchipapas'  => '🍟',
-                'Platos'       => '🍽️',
-                'Bebidas'      => '🥤',
-                'Postres'      => '🍰',
-                'Otros'        => '🌟',
+                'Burgers'      => '<i class="ph ph-hamburger"></i>',
+                'Hamburguesas' => '<i class="ph ph-hamburger"></i>',
+                'Salchipapas'  => '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 256 256"><path d="M64,120 L80,232 L176,232 L192,120 Z"/><path d="M64,120 Q128,150 192,120"/><line x1="96" y1="128" x2="88" y2="56"/><line x1="128" y1="135" x2="128" y2="40"/><line x1="160" y1="128" x2="168" y2="64"/></svg>',
+                'Papas'        => '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 256 256"><path d="M64,120 L80,232 L176,232 L192,120 Z"/><path d="M64,120 Q128,150 192,120"/><line x1="96" y1="128" x2="88" y2="56"/><line x1="128" y1="135" x2="128" y2="40"/><line x1="160" y1="128" x2="168" y2="64"/></svg>',
+                'Hot Dogs'     => '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 256 256"><path d="M48,104 C48,64 208,64 208,104"/><path d="M48,152 C48,192 208,192 208,152"/><rect x="24" y="104" width="208" height="48" rx="24"/><path d="M64,128 Q80,112 96,128 T128,128 T160,128 T192,128" stroke-width="12"/></svg>',
+                'Perros'       => '<svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 256 256"><path d="M48,104 C48,64 208,64 208,104"/><path d="M48,152 C48,192 208,192 208,152"/><rect x="24" y="104" width="208" height="48" rx="24"/><path d="M64,128 Q80,112 96,128 T128,128 T160,128 T192,128" stroke-width="12"/></svg>',
+                'Picadas'      => '<i class="ph ph-bowl-food"></i>',
+                'Platos'       => '<i class="ph ph-fork-knife"></i>',
+                'Bebidas'      => '<i class="ph ph-coffee"></i>',
+                'Postres'      => '<i class="ph ph-ice-cream"></i>',
+                'Otros'        => '<i class="ph ph-star"></i>',
             ];
         @endphp
         @foreach($menuItems->keys() as $i => $cat)
@@ -687,7 +776,7 @@
            href="#cat-{{ Str::slug($cat) }}"
            data-cat="{{ Str::slug($cat) }}"
            id="pill-{{ Str::slug($cat) }}">
-            <span class="cat-pill-icon">{{ $catIcons[$cat] ?? '🌟' }}</span>
+            <span class="cat-pill-icon">{!! $catIcons[$cat] ?? '<i class="ph ph-star"></i>' !!}</span>
             <span class="cat-pill-label">{{ $cat }}</span>
         </a>
         @endforeach
@@ -697,11 +786,13 @@
 {{-- ══════════════════════════════════════════════════════════
      SECCIONES DEL MENÚ POR CATEGORÍA
 ══════════════════════════════════════════════════════════ --}}
+<form id="order-form" action="{{ route('orders.store') }}" method="POST" enctype="multipart/form-data">
+    @csrf
 <div class="menu-area">
     @foreach($menuItems as $category => $items)
     <section id="cat-{{ Str::slug($category) }}" class="menu-section">
         <div class="menu-section-title">
-            <span style="font-size:2rem; line-height:1;">{{ $catIcons[$category] ?? '🌟' }}</span>
+            <span style="font-size:2rem; line-height:1;">{!! $catIcons[$category] ?? '<i class="ph ph-star"></i>' !!}</span>
             <h2>{{ strtoupper($category) }}</h2>
             <div class="menu-section-line"></div>
             <span class="menu-section-count">{{ $items->count() }} opciones</span>
@@ -709,12 +800,20 @@
 
         <div class="prod-grid">
             @foreach($items as $item)
-            <div class="prod-card">
+            <div class="prod-card" data-id="{{ $item->id }}" style="cursor:pointer;"
+                 data-name="{{ strtoupper($item->name) }}"
+                 data-price="{{ $item->price_formatted }}"
+                 data-raw-price="{{ (float)$item->price }}"
+                 data-custom="{{ json_encode($item->customizations) }}"
+                 data-desc="{{ $item->description }}"
+                 data-img="{{ $item->image_url }}"
+                 data-emoji="{{ $category === 'Hamburguesas' || $category === 'Burgers' ? '🍔' : ($category === 'Salchipapas' || $category === 'Papas' ? '🍟' : ($category === 'Bebidas' ? '🥤' : '✨')) }}"
+                 onclick="openProductModal(this)">
                 <div class="prod-thumb">
-                    @if($item->image_path)
-                        <img src="{{ Storage::url($item->image_path) }}" alt="{{ $item->name }}" loading="lazy">
+                    @if($item->image_url)
+                        <img src="{{ $item->image_url }}" alt="{{ $item->name }}" loading="lazy">
                     @else
-                        {{ $catIcons[$category] ?? '🌟' }}
+                        {!! $catIcons[$category] ?? '<i class="ph ph-star"></i>' !!}
                     @endif
                 </div>
                 <div class="prod-info">
@@ -726,9 +825,16 @@
                     <div class="prod-footer">
                         <span class="prod-price">{{ $item->price_formatted }}</span>
                         @auth
-                            <a href="{{ route('dashboard') }}" class="prod-add" title="Ir a pedir">+</a>
+                            <div style="display:flex; align-items:center; gap:0.5rem;" onclick="event.stopPropagation()">
+                                <button type="button" onclick="changeQty({{ $item->id }}, -1)"
+                                    style="width:28px; height:28px; border-radius:50%; background:var(--bg-elevated, #372618); border:1px solid rgba(224,160,80,0.14); color:#F2E8D5; cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center;">−</button>
+                                <span id="qty-display-{{ $item->id }}"
+                                      style="min-width:20px; text-align:center; font-weight:700; color:#F2E8D5;">0</span>
+                                <button type="button" onclick="changeQty({{ $item->id }}, 1)"
+                                    class="prod-add">+</button>
+                            </div>
                         @else
-                            <a href="{{ route('register') }}" class="prod-add" title="Regístrate para pedir">+</a>
+                            <a onclick="event.stopPropagation(); openAuthModal('login')" class="prod-add" title="Inicia sesión para pedir" style="cursor:pointer;">+</a>
                         @endauth
                     </div>
                 </div>
@@ -737,10 +843,139 @@
         </div>
     </section>
     @endforeach
+
+    @auth
+    {{-- Barra de pedido flotante --}}
+    <div id="order-bar" style="display:none; position:fixed; bottom:1.5rem; left:50%; transform:translateX(-50%);
+         background:#372618; border:1px solid rgba(224,120,32,0.35);
+         box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 0 30px rgba(224,120,32,0.15);
+         border-radius:20px; padding:1rem 1.75rem; z-index:9999;
+         align-items:center; gap:1.5rem; min-width:360px;
+         opacity:0; transition:opacity 0.3s ease;">
+        <div>
+            <div style="font-size:0.75rem; color:#8A7460; text-transform:uppercase; letter-spacing:0.5px;">Tu pedido</div>
+            <div style="color:#F2E8D5; font-weight:700;">
+                <span id="bar-items">0</span> item(s) ·
+                <span id="bar-total" style="color:#F09040;">$0</span>
+            </div>
+        </div>
+        <div style="display:flex; gap:0.75rem; align-items:center; margin-left:auto;">
+            <button type="button" class="btn btn-primary" onclick="openCheckoutModal()" style="border:none; padding: 0.6rem 1.25rem;">Pedir 🔥</button>
+        </div>
+    </div>
+    @endauth
 </div>
+
+@auth
+{{-- ══════════════════════════════════════════════════════════
+     MODAL DE CHECKOUT
+══════════════════════════════════════════════════════════ --}}
+<div class="auth-modal-overlay" id="checkoutModalOverlay" onclick="closeCheckoutModal()">
+    <div class="auth-modal" onclick="event.stopPropagation()" style="max-width:500px;">
+        <button type="button" class="auth-modal-close" onclick="closeCheckoutModal()">×</button>
+        <h2 class="auth-modal-title" style="font-size:1.8rem;">Detalles del Pedido</h2>
+        <p class="auth-modal-subtitle">Revisa tus productos y personalízalos 🔥</p>
+
+        <div style="text-align:left; max-height:60vh; overflow-y:auto; padding-right:5px; margin-bottom:1rem;" id="checkout-scroll-area">
+            {{-- Contenedor dinámico de productos --}}
+            <div id="checkout-items-container" style="margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 1rem;">
+                <!-- Los items se inyectarán aquí -->
+            </div>
+            {{-- Tipo de entrega --}}
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label class="form-label">¿Cómo deseas recibir tu pedido? *</label>
+                <div style="display:flex; gap:1rem;">
+                    <label style="flex:1; display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.05); padding:0.75rem; border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1);">
+                        <input type="radio" name="order_type" value="delivery" checked onchange="toggleDeliveryMode(this.value)">
+                        <span style="color:#F2E8D5; font-size:0.9rem;">🛵 Domicilio</span>
+                    </label>
+                    <label style="flex:1; display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.05); padding:0.75rem; border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1);">
+                        <input type="radio" name="order_type" value="pickup" onchange="toggleDeliveryMode(this.value)">
+                        <span style="color:#F2E8D5; font-size:0.9rem;">🏪 Recoger en local</span>
+                    </label>
+                </div>
+            </div>
+
+            {{-- Dirección --}}
+            <div id="address-container" class="form-group" style="margin-bottom: 1.25rem;">
+                <label class="form-label">Dirección de Entrega *</label>
+                @if(empty($addresses) || $addresses->isEmpty())
+                    <input type="text" name="new_address" id="new_address_input" class="form-input modal-input" placeholder="Ej: Calle 10 # 20-30, Apto 101">
+                    <small style="color:#8A7460; font-size:0.75rem;">Guardaremos esta dirección automáticamente para tus próximos pedidos.</small>
+                @else
+                    <select name="address_id" id="address_id_select" required class="form-input modal-input">
+                        <option value="">Selecciona dirección...</option>
+                        @foreach($addresses as $addr)
+                            <option value="{{ $addr->id }}">{{ $addr->address }} {{ $addr->reference ? '('.$addr->reference.')' : '' }}</option>
+                        @endforeach
+                    </select>
+                @endif
+            </div>
+
+            {{-- Comentarios del pedido --}}
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label class="form-label">Comentarios Adicionales (Opcional)</label>
+                <textarea name="notes" class="form-input modal-input" rows="2" placeholder="Ej: La carne bien asada, por favor timbrar fuerte, etc."></textarea>
+                <small style="color:#8A7460; font-size:0.75rem;">Usa este espacio para instrucciones de preparación generales o de entrega.</small>
+            </div>
+
+            {{-- Medio de pago --}}
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label class="form-label">Medio de Pago *</label>
+                <div style="display:flex; gap:1rem;">
+                    <label style="flex:1; display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.05); padding:0.75rem; border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1);">
+                        <input type="radio" name="payment_method" value="cash" checked onchange="toggleTransferInfo()">
+                        <span style="color:#F2E8D5; font-size:0.9rem;">💵 Efectivo</span>
+                    </label>
+                    <label style="flex:1; display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.05); padding:0.75rem; border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1);">
+                        <input type="radio" name="payment_method" value="transfer" onchange="toggleTransferInfo()">
+                        <span style="color:#F2E8D5; font-size:0.9rem;">🏦 Transferencia</span>
+                    </label>
+                </div>
+            </div>
+
+            {{-- Info Transferencia --}}
+            <div id="transfer-info" style="display:none; background:rgba(224,120,32,0.1); border:1px solid rgba(224,120,32,0.3); border-radius:8px; padding:1rem; margin-bottom:1.5rem;">
+                <p style="font-size:0.85rem; color:#F2E8D5; margin-bottom:0.75rem; line-height:1.5;">
+                    <strong style="color:#E07820;">Datos Bancarios:</strong><br>
+                    Banco: Bancolombia (Ahorros)<br>
+                    Cuenta: 123-456789-00<br>
+                    Titular: Mr. Sabor Burgers SAS<br>
+                    NIT: 900.123.456-7
+                </p>
+                <label class="form-label">Sube tu comprobante (Foto o Captura) *</label>
+                <input type="file" name="payment_receipt" id="payment_receipt" class="form-input modal-input" accept="image/*" style="padding:0.5rem;">
+                <small style="color:#8A7460; font-size:0.75rem; display:block; margin-top:0.25rem;">Requerido para confirmar pedidos por transferencia.</small>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-full" id="btn-submit-order" style="border:none; padding:1rem; font-size:1.1rem;">Confirmar y Pedir 🔥</button>
+        </div>
+    </div>
+</div>
+@endauth
+</form>
+
+{{-- ══════════════════════════════════════════════════════════
+     MODAL DE PRODUCTO (INFO COMPLETA)
+══════════════════════════════════════════════════════════ --}}
+<div class="product-modal-overlay" id="productModalOverlay" onclick="closeProductModal()">
+    <div class="product-modal" onclick="event.stopPropagation()">
+        <button class="product-modal-close" onclick="closeProductModal()">×</button>
+        <div class="product-modal-img-wrap">
+            <img id="pm-img" class="product-modal-img" src="" alt="Producto" style="display:none;">
+            <div id="pm-emoji" style="font-size: 5rem; display:none;">🍔</div>
+        </div>
+        <div class="product-modal-body">
+            <div id="pm-title" class="product-modal-title">Nombre Producto</div>
+            <div id="pm-price" class="product-modal-price">$0</div>
+            <div id="pm-desc" class="product-modal-desc">Descripción detallada...</div>
+        </div>
+    </div>
+</div>
+
 @else
 <div style="text-align:center; padding:6rem 2rem; color:#8A7460; background:var(--bg-main);">
-    <div style="font-size:5rem; margin-bottom:1rem;">🍽️</div>
+    <div style="font-size:5rem; margin-bottom:1rem;"><i class="ph ph-fork-knife"></i></div>
     <h3 style="font-family:'Bebas Neue',sans-serif; font-size:2rem; letter-spacing:3px; color:#F2E8D5; margin-bottom:0.5rem;">Menú en preparación</h3>
     <p>¡Muy pronto! El equipo de Mr. Sabor está listo para ti.</p>
 </div>
@@ -804,14 +1039,393 @@
     <p>© {{ date('Y') }} <span>Mr. Sabor Burgers</span> — Todos los derechos reservados. Hecho con ❤️ y 🔥</p>
 </footer>
 
+
+
+{{-- ══════════════════════════════════════════════════════════
+     MODAL DE LOGIN / REGISTRO
+══════════════════════════════════════════════════════════ --}}
+<div class="auth-modal-overlay" id="authModalOverlay" onclick="closeAuthModal()">
+    <div class="auth-modal" onclick="event.stopPropagation()">
+        <button class="auth-modal-close" onclick="closeAuthModal()">×</button>
+        
+        <!-- LOGIN FORM -->
+        <div id="login-view">
+            <h2 class="auth-modal-title">Iniciar Sesión</h2>
+            <p class="auth-modal-subtitle">Entra para hacer tu pedido <i class="ph ph-fire"></i></p>
+            <form method="POST" action="{{ route('login') }}">
+                @csrf
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" name="email" class="form-input modal-input" required autofocus>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" name="password" class="form-input modal-input" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" style="border:none;">Entrar</button>
+            </form>
+            <p style="text-align:center; margin-top:1.5rem; font-size:0.85rem; color:#8A7460;">
+                ¿No tienes cuenta? <a onclick="toggleAuthView('register')" class="auth-toggle-link">Regístrate</a>
+            </p>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="register-view" style="display: none;">
+            <h2 class="auth-modal-title">Crear Cuenta</h2>
+            <p class="auth-modal-subtitle">Únete a la familia Mr. Sabor <i class="ph ph-hamburger"></i></p>
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">Nombre</label>
+                    <input type="text" name="name" class="form-input modal-input" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1rem;">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" name="email" class="form-input modal-input" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 1.5rem;">
+                    <label class="form-label">Contraseña</label>
+                    <input type="password" name="password" class="form-input modal-input" required>
+                    <input type="hidden" name="password_confirmation" id="pass_confirm">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full" onclick="document.getElementById('pass_confirm').value = this.form.password.value" style="border:none;">Registrarse</button>
+            </form>
+            <p style="text-align:center; margin-top:1.5rem; font-size:0.85rem; color:#8A7460;">
+                ¿Ya tienes cuenta? <a onclick="toggleAuthView('login')" class="auth-toggle-link">Inicia Sesión</a>
+            </p>
+        </div>
+    </div>
+</div>
+
 {{-- ══════════════════════════════════════════════════════════
      JAVASCRIPT
 ══════════════════════════════════════════════════════════ --}}
 <script>
+// ── Modal Auth ────────────────────────────────────────────
+function openCheckoutModal() {
+    document.getElementById('checkoutModalOverlay').classList.add('active');
+}
+function closeCheckoutModal() {
+    document.getElementById('checkoutModalOverlay').classList.remove('active');
+}
+function toggleTransferInfo() {
+    const val = document.querySelector('input[name="payment_method"]:checked').value;
+    document.getElementById('transfer-info').style.display = (val === 'transfer') ? 'block' : 'none';
+    if (val !== 'transfer') document.getElementById('payment_receipt').value = '';
+}
+
+function openAuthModal(view = 'login') {
+    toggleAuthView(view);
+    document.getElementById('authModalOverlay').classList.add('active');
+}
+function closeAuthModal() {
+    document.getElementById('authModalOverlay').classList.remove('active');
+}
+function toggleAuthView(view) {
+    document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
+    document.getElementById('register-view').style.display = view === 'register' ? 'block' : 'none';
+}
+
+// ── Cart Logic ────────────────────────────────────────────
+@auth
+const prices = {
+    @foreach($menuItems->flatten() as $item)
+    {{ $item->id }}: {{ (float)$item->price }},
+    @endforeach
+};
+
+const menuData = {
+    @foreach($menuItems->flatten() as $item)
+    {{ $item->id }}: {
+        name: "{{ addslashes($item->name) }}",
+        price: {{ (float)$item->price }},
+        custom: {!! json_encode($item->customizations) ?: 'null' !!}
+    },
+    @endforeach
+};
+
+const deliveryFee = {{ isset($deliveryFee) ? (float)$deliveryFee : 0 }};
+let qtys = {};
+let totalItems = 0, totalPriceBase = 0;
+let deliveryMode = 'delivery';
+
+function changeQty(id, delta) {
+    qtys[id] = Math.max(0, (qtys[id] || 0) + delta);
+    document.getElementById('qty-display-' + id).textContent = qtys[id];
+
+    if (delta > 0) {
+        // Registrar interés (vista) en el producto
+        fetch(`/api/menu-items/${id}/view`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            }
+        }).catch(err => console.log('Error tracking view', err));
+    }
+
+    // highlight card
+    const card = document.querySelector(`.prod-card[data-id="${id}"]`);
+    if (card) {
+        if (qtys[id] > 0) {
+            card.style.borderColor = 'rgba(224,120,32,0.45)';
+            card.style.background  = 'rgba(224,120,32,0.05)';
+        } else {
+            card.style.borderColor = '';
+            card.style.background  = '';
+        }
+    }
+
+    recalc();
+}
+
+function recalc() {
+    totalItems = 0; totalPriceBase = 0;
+    
+    for (const [id, q] of Object.entries(qtys)) {
+        if (q > 0 && prices[id]) { 
+            totalItems += q; 
+            totalPriceBase += prices[id] * q; 
+        }
+    }
+
+    let barTotal = totalPriceBase;
+    if (totalItems > 0 && deliveryMode === 'delivery') barTotal += deliveryFee;
+
+    const bar = document.getElementById('order-bar');
+    if (bar) {
+        document.getElementById('bar-items').textContent = totalItems;
+        const fmt = barTotal >= 1000 ? '$' + (barTotal/1000).toFixed(1) + 'K' : '$' + barTotal.toFixed(0);
+        document.getElementById('bar-total').textContent = deliveryMode === 'delivery' ? fmt + ' (Inc. Domicilio)' : fmt;
+
+        if (totalItems > 0) {
+            bar.style.display = 'flex';
+            setTimeout(() => bar.style.opacity = '1', 10);
+        } else {
+            bar.style.opacity = '0';
+            setTimeout(() => bar.style.display = 'none', 300);
+        }
+    }
+}
+
+function openCheckoutModal() {
+    const container = document.getElementById('checkout-items-container');
+    container.innerHTML = '';
+    
+    let html = '';
+    let itemIndex = 0;
+
+    for (const [id, q] of Object.entries(qtys)) {
+        if (q > 0 && menuData[id]) {
+            const product = menuData[id];
+            
+            for(let i=0; i<q; i++) {
+                html += `
+                    <div class="checkout-cart-item" data-id="${id}" data-index="${itemIndex}" style="margin-bottom:1rem; padding:1rem; background:rgba(0,0,0,0.2); border-radius:8px; border:1px solid rgba(224,120,32,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+                            <span style="font-weight:700; color:#F2E8D5;">${product.name}</span>
+                            <span style="color:#E07820; font-weight:700;">$${(product.price / 1000).toFixed(1)}K</span>
+                        </div>
+                `;
+                
+                if (product.custom && ((product.custom.removable && product.custom.removable.length) || (product.custom.extras && product.custom.extras.length))) {
+                    
+                    if (product.custom.removable && product.custom.removable.length) {
+                        html += `<div style="margin-top:0.5rem;"><div style="font-size:0.75rem; color:#8A7460; margin-bottom:0.2rem; text-transform:uppercase;">Quitar:</div>`;
+                        product.custom.removable.forEach(rem => {
+                            html += `
+                                <label style="display:inline-flex; align-items:center; gap:0.3rem; margin-right:0.75rem; color:#F2E8D5; font-size:0.8rem; cursor:pointer;">
+                                    <input type="checkbox" class="chk-removable" data-item="${itemIndex}" value="${rem}">
+                                    <span>${rem}</span>
+                                </label>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+                    
+                    if (product.custom.extras && product.custom.extras.length) {
+                        html += `<div style="margin-top:0.5rem;"><div style="font-size:0.75rem; color:#8A7460; margin-bottom:0.2rem; text-transform:uppercase;">Adiciones:</div>`;
+                        product.custom.extras.forEach(ext => {
+                            html += `
+                                <label style="display:flex; align-items:center; gap:0.5rem; color:#F2E8D5; font-size:0.8rem; cursor:pointer; margin-bottom:0.3rem;">
+                                    <input type="checkbox" class="chk-extra" data-item="${itemIndex}" data-price="${ext.price}" data-name="${ext.name}" onchange="updateCheckoutTotal()">
+                                    <span>${ext.name} (+$${ext.price})</span>
+                                </label>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+                }
+                
+                html += `</div>`;
+                itemIndex++;
+            }
+        }
+    }
+    
+    container.innerHTML = html;
+    updateCheckoutTotal();
+    
+    document.getElementById('checkoutModalOverlay').classList.add('active');
+}
+
+function updateCheckoutTotal() {
+    let finalTotal = totalPriceBase;
+    if (deliveryMode === 'delivery') {
+        finalTotal += deliveryFee;
+    }
+    
+    document.querySelectorAll('.chk-extra:checked').forEach(chk => {
+        finalTotal += parseFloat(chk.dataset.price);
+    });
+    
+    const btn = document.getElementById('btn-submit-order');
+    const fmt = finalTotal >= 1000 ? '$' + (finalTotal/1000).toFixed(1) + 'K' : '$' + finalTotal.toFixed(0);
+    btn.innerHTML = `Confirmar y Pedir - ${fmt} 🔥`;
+}
+
+function toggleTransferInfo() {
+    const isTransfer = document.querySelector('input[name="payment_method"][value="transfer"]').checked;
+    document.getElementById('transfer-info').style.display = isTransfer ? 'block' : 'none';
+    document.getElementById('payment_receipt').required = isTransfer;
+}
+
+function toggleDeliveryMode(mode) {
+    deliveryMode = mode;
+    const addrContainer = document.getElementById('address-container');
+    const newInput = document.getElementById('new_address_input');
+    const select = document.getElementById('address_id_select');
+
+    if (mode === 'pickup') {
+        addrContainer.style.display = 'none';
+        if (newInput) newInput.removeAttribute('required');
+        if (select) select.removeAttribute('required');
+    } else {
+        addrContainer.style.display = 'block';
+        if (newInput) newInput.setAttribute('required', 'true');
+        if (select) select.setAttribute('required', 'true');
+    }
+    
+    // Update totals
+    recalc();
+    updateCheckoutTotal();
+}
+
+function closeCheckoutModal() {
+    document.getElementById('checkoutModalOverlay').classList.remove('active');
+}
+
+document.getElementById('order-form')?.addEventListener('submit', function(e) {
+    let addressSelect = document.querySelector('select[name="address_id"]');
+    let newAddressInput = document.querySelector('input[name="new_address"]');
+    
+    if (deliveryMode === 'delivery') {
+        if (addressSelect && !addressSelect.value) {
+            e.preventDefault();
+            alert('Por favor selecciona una dirección de entrega.');
+            return false;
+        }
+        
+        if (newAddressInput && !newAddressInput.value.trim()) {
+            e.preventDefault();
+            alert('Por favor escribe una dirección de entrega.');
+            return false;
+        }
+    }
+
+    let pm = document.querySelector('input[name="payment_method"]:checked')?.value;
+    if (pm === 'transfer') {
+        let file = document.getElementById('payment_receipt').files.length;
+        if (file === 0) {
+            e.preventDefault();
+            alert('Debes adjuntar el comprobante de transferencia para continuar.');
+            return false;
+        }
+    }
+
+    if (totalItems === 0) {
+        e.preventDefault();
+        alert('Tu carrito está vacío.');
+        return false;
+    }
+
+    // Generar inputs ocultos para cada item configurado
+    const form = this;
+    document.querySelectorAll('.dynamic-cart-input').forEach(el => el.remove());
+
+    const items = document.querySelectorAll('.checkout-cart-item');
+    items.forEach((itemDiv, index) => {
+        const id = itemDiv.dataset.id;
+        const itemIdx = itemDiv.dataset.index;
+        
+        let idInput = document.createElement('input');
+        idInput.type = 'hidden';
+        idInput.name = `items[${index}][id]`;
+        idInput.value = id;
+        idInput.className = 'dynamic-cart-input';
+        form.appendChild(idInput);
+
+        let qtyInput = document.createElement('input');
+        qtyInput.type = 'hidden';
+        qtyInput.name = `items[${index}][quantity]`;
+        qtyInput.value = 1; // cada bloque es 1 unidad
+        qtyInput.className = 'dynamic-cart-input';
+        form.appendChild(qtyInput);
+
+        let removed = [];
+        itemDiv.querySelectorAll('.chk-removable:checked').forEach(chk => {
+            removed.push(chk.value);
+        });
+        
+        let added = [];
+        itemDiv.querySelectorAll('.chk-extra:checked').forEach(chk => {
+            added.push({ name: chk.dataset.name, price: parseFloat(chk.dataset.price) });
+        });
+        
+        if (removed.length > 0 || added.length > 0) {
+            let custInput = document.createElement('input');
+            custInput.type = 'hidden';
+            custInput.name = `items[${index}][customizations]`;
+            custInput.value = JSON.stringify({ removed: removed, extras: added });
+            custInput.className = 'dynamic-cart-input';
+            form.appendChild(custInput);
+        }
+    });
+});
+@endauth
+
 // ── Navbar scroll effect ──────────────────────────────────
 window.addEventListener('scroll', () => {
     document.getElementById('lp-nav').classList.toggle('scrolled', window.scrollY > 30);
 });
+
+// ── Modal de Producto ─────────────────────────────────────
+function openProductModal(el) {
+    const name  = el.dataset.name;
+    const desc  = el.dataset.desc;
+    const price = el.dataset.price;
+    const img   = el.dataset.img;
+    const emoji = el.dataset.emoji.trim();
+
+    document.getElementById('pm-title').innerText = name;
+    document.getElementById('pm-price').innerText = price;
+    document.getElementById('pm-desc').innerText  = desc;
+
+    if (img) {
+        document.getElementById('pm-img').src = img;
+        document.getElementById('pm-img').style.display = 'block';
+        document.getElementById('pm-emoji').style.display = 'none';
+    } else {
+        document.getElementById('pm-emoji').innerText = emoji;
+        document.getElementById('pm-img').style.display = 'none';
+        document.getElementById('pm-emoji').style.display = 'block';
+    }
+
+    document.getElementById('productModalOverlay').classList.add('active');
+}
+function closeProductModal() {
+    document.getElementById('productModalOverlay').classList.remove('active');
+}
 
 // ── Carrusel ──────────────────────────────────────────────
 @if($promotions->count() > 1)

@@ -9,9 +9,10 @@ class Order extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'status', 'total', 'notes', 'address', 'address_id', 'delivery_fee'];
+    protected $fillable = ['user_id', 'status', 'total', 'notes', 'address', 'address_id', 'delivery_fee', 'payment_method', 'payment_receipt_path', 'order_type'];
 
     const STATUS_LABELS = [
+        'pending_payment' => 'Pendiente de Pago',
         'pending'   => 'Pendiente',
         'preparing' => 'En Preparación',
         'on_way'    => 'En Camino',
@@ -20,6 +21,7 @@ class Order extends Model
     ];
 
     const STATUS_COLORS = [
+        'pending_payment' => 'gray',
         'pending'   => 'amber',
         'preparing' => 'orange',
         'on_way'    => 'blue',
@@ -28,6 +30,7 @@ class Order extends Model
     ];
 
     const STATUS_ICONS = [
+        'pending_payment' => '💳',
         'pending'   => '⏳',
         'preparing' => '🔥',
         'on_way'    => '🚀',
@@ -35,7 +38,7 @@ class Order extends Model
         'cancelled' => '🚫',
     ];
 
-    const STATUS_FLOW = ['pending', 'preparing', 'on_way', 'delivered'];
+    const STATUS_FLOW = ['pending_payment', 'pending', 'preparing', 'on_way', 'delivered'];
 
     public function user()
     {
@@ -79,5 +82,11 @@ class Order extends Model
             return '$' . number_format($val / 1000, 1) . 'K';
         }
         return '$' . number_format($val, 0);
+    }
+
+    public function getPaymentReceiptUrlAttribute(): ?string
+    {
+        if (!$this->payment_receipt_path) return null;
+        return \Illuminate\Support\Facades\Storage::url($this->payment_receipt_path);
     }
 }

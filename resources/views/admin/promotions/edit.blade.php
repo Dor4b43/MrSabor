@@ -57,8 +57,8 @@
 
             <div class="admin-form-group">
                 <label class="form-label">Imagen actual</label>
-                @if($promotion->image_path)
-                    <img src="{{ Storage::url($promotion->image_path) }}" alt="{{ $promotion->title }}"
+                @if($promotion->image_url)
+                    <img src="{{ $promotion->image_url }}" alt="{{ $promotion->title }}"
                          style="width:100%; max-height:180px; object-fit:cover; border-radius:12px; border:1px solid var(--border); margin-bottom:0.75rem;">
                 @else
                     <div style="width:100%; height:80px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:12px; display:flex; align-items:center; justify-content:center; color:var(--text-muted); font-size:0.85rem; margin-bottom:0.75rem;">

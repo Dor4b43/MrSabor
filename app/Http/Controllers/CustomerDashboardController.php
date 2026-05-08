@@ -13,13 +13,10 @@ class CustomerDashboardController extends Controller
 {
     public function index()
     {
-        $menuItems = MenuItem::with('menuCategory')
-            ->where('is_available', true)
-            ->whereNotNull('category_id')
+        $menuItems = MenuItem::where('is_available', true)
+            ->orderBy('category')->orderBy('name')
             ->get()
-            ->groupBy(function ($item) {
-                return $item->menuCategory ? $item->menuCategory->name : 'Otros';
-            });
+            ->groupBy('category');
 
         $myOrders = Order::where('user_id', Auth::id())
             ->with('items.menuItem')

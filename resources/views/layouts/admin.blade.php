@@ -6,12 +6,43 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Admin — Mr. Sabor Burgers</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         /* ══ ADMIN LAYOUT ══════════════════════════════════════ */
         .admin-shell {
             display: flex;
             min-height: 100vh;
             background: var(--bg-deep);
+        }
+        
+        /* Fix para SVG de paginación de Laravel */
+        nav[role="navigation"] {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 1rem;
+        }
+        nav[role="navigation"] svg {
+            width: 1.25rem !important;
+            height: 1.25rem !important;
+        }
+        nav[role="navigation"] a {
+            color: var(--primary-light);
+            text-decoration: none;
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            background: rgba(224,120,32,0.1);
+            transition: all 0.2s ease;
+        }
+        nav[role="navigation"] a:hover {
+            background: rgba(224,120,32,0.2);
+            color: #fff;
+        }
+        nav[role="navigation"] span.cursor-default {
+            color: var(--text-muted);
+            padding: 0.4rem 0.8rem;
         }
         /* sidebar */
         .admin-sidebar {
@@ -271,7 +302,7 @@
     {{-- ══ SIDEBAR ══════════════════════════════════════════ --}}
     <aside class="admin-sidebar">
         <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
-            <div class="sidebar-logo">🔥</div>
+            <div class="sidebar-logo"><i class="ph ph-fire"></i></div>
             <div class="sidebar-brand-text">
                 <div class="sidebar-brand-main">MR. SABOR</div>
                 <div class="sidebar-brand-sub">Panel Admin</div>
@@ -279,7 +310,7 @@
         </a>
 
         <div class="sidebar-admin-badge">
-            <span style="font-size:1.2rem;">👤</span>
+            <span style="font-size:1.5rem; color:var(--primary-light);"><i class="ph ph-user-circle"></i></span>
             <div>
                 <div class="sidebar-admin-name">{{ Auth::user()->name }}</div>
                 <div class="sidebar-admin-role">Administrador</div>
@@ -290,64 +321,64 @@
             <div class="sidebar-section-label">General</div>
             <a href="{{ route('admin.dashboard') }}"
                class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
-                <span class="sidebar-icon">📊</span> Dashboard
+                <span class="sidebar-icon"><i class="ph ph-squares-four"></i></span> Dashboard
             </a>
 
             <div class="sidebar-section-label">Catálogo</div>
             <a href="{{ route('admin.categories.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.categories.*') ? 'active' : '' }}">
-                <span class="sidebar-icon">📂</span> Categorías
+                <span class="sidebar-icon"><i class="ph ph-folder"></i></span> Categorías
             </a>
 
             <div class="sidebar-section-label">Menú</div>
             <a href="{{ route('admin.menu-items.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.menu-items.*') ? 'active' : '' }}">
-                <span class="sidebar-icon">🍔</span> Productos del menú
+                <span class="sidebar-icon"><i class="ph ph-hamburger"></i></span> Productos del menú
             </a>
             <a href="{{ route('admin.menu-items.create') }}"
                class="sidebar-link {{ request()->routeIs('admin.menu-items.create') ? 'active' : '' }}">
-                <span class="sidebar-icon">➕</span> Añadir producto
+                <span class="sidebar-icon"><i class="ph ph-plus-circle"></i></span> Añadir producto
             </a>
 
             <div class="sidebar-section-label">Promociones</div>
             <a href="{{ route('admin.promotions.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.promotions.*') ? 'active' : '' }}">
-                <span class="sidebar-icon">🎉</span> Gestionar promos
+                <span class="sidebar-icon"><i class="ph ph-tag"></i></span> Gestionar promos
             </a>
             <a href="{{ route('admin.promotions.create') }}"
                class="sidebar-link">
-                <span class="sidebar-icon">➕</span> Nueva promoción
+                <span class="sidebar-icon"><i class="ph ph-plus-circle"></i></span> Nueva promoción
             </a>
 
             <div class="sidebar-section-label">Pedidos</div>
             <a href="{{ route('admin.orders.index') }}"
                class="sidebar-link {{ request()->routeIs('admin.orders.*') ? 'active' : '' }}">
-                <span class="sidebar-icon">📦</span> Todos los pedidos
+                <span class="sidebar-icon"><i class="ph ph-package"></i></span> Todos los pedidos
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'pending']) }}"
                class="sidebar-link">
-                <span class="sidebar-icon">⏳</span> Pendientes
+                <span class="sidebar-icon"><i class="ph ph-hourglass-high"></i></span> Pendientes
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'preparing']) }}"
                class="sidebar-link">
-                <span class="sidebar-icon">🔥</span> En preparación
+                <span class="sidebar-icon"><i class="ph ph-cooking-pot"></i></span> En preparación
             </a>
             <a href="{{ route('admin.orders.index', ['status' => 'on_way']) }}"
                class="sidebar-link">
-                <span class="sidebar-icon">🚀</span> En camino
+                <span class="sidebar-icon"><i class="ph ph-moped"></i></span> En camino
             </a>
 
             <div class="sidebar-section-label">Cuenta</div>
             <a href="{{ route('dashboard') }}" class="sidebar-link">
-                <span class="sidebar-icon">🏠</span> Vista cliente
+                <span class="sidebar-icon"><i class="ph ph-storefront"></i></span> Vista cliente
             </a>
         </nav>
 
         <div class="sidebar-bottom">
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="btn btn-ghost btn-full btn-sm" style="justify-content:flex-start; gap:0.6rem;">
-                    🚪 Cerrar sesión
+                <button type="submit" class="btn btn-ghost btn-full btn-sm" style="justify-content:flex-start; gap:0.6rem; color:var(--text-muted);">
+                    <i class="ph ph-sign-out"></i> Cerrar sesión
                 </button>
             </form>
         </div>

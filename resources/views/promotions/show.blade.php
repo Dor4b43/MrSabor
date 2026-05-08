@@ -154,8 +154,8 @@
 
 {{-- HERO --}}
 <section class="promo-hero">
-    @if($promotion->image_path)
-        <img src="{{ Storage::url($promotion->image_path) }}" class="promo-hero-bg" alt="{{ $promotion->title }}">
+    @if($promotion->image_url)
+        <img src="{{ $promotion->image_url }}" class="promo-hero-bg" alt="{{ $promotion->title }}">
     @else
         <div class="promo-hero-fallback"></div>
         <div class="promo-hero-deco">🍔</div>
@@ -244,13 +244,16 @@
                 @foreach($menuItems->flatten()->take(8) as $item)
                 <a href="{{ auth()->check() ? route('dashboard') : route('register') }}" class="menu-mini-card">
                     <div class="menu-mini-emoji">
-                        @if($item->image_path)
-                            <img src="{{ Storage::url($item->image_path) }}" alt="{{ $item->name }}"
+                        @if($item->image_url)
+                            <img src="{{ $item->image_url }}" alt="{{ $item->name }}"
                                  style="width:100%; height:100%; object-fit:cover; border-radius:8px;">
-                        @elseif($item->category === 'Burgers') 🍔
-                        @elseif($item->category === 'Salchipapas') 🍟
-                        @elseif($item->category === 'Platos') 🍽️
-                        @else 🌟
+                        @elseif($item->category === 'Burgers') <i class="ph ph-hamburger"></i>
+                        @elseif($item->category === 'Salchipapas') <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 256 256"><path d="M64,120 L80,232 L176,232 L192,120 Z"/><path d="M64,120 Q128,150 192,120"/><line x1="96" y1="128" x2="88" y2="56"/><line x1="128" y1="135" x2="128" y2="40"/><line x1="160" y1="128" x2="168" y2="64"/></svg>
+                        @elseif($item->category === 'Hot Dogs') <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="none" stroke="currentColor" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 256 256"><path d="M48,104 C48,64 208,64 208,104"/><path d="M48,152 C48,192 208,192 208,152"/><rect x="24" y="104" width="208" height="48" rx="24"/><path d="M64,128 Q80,112 96,128 T128,128 T160,128 T192,128" stroke-width="12"/></svg>
+                        @elseif($item->category === 'Platos') <i class="ph ph-fork-knife"></i>
+                        @elseif($item->category === 'Bebidas') <i class="ph ph-coffee"></i>
+                        @elseif($item->category === 'Postres') <i class="ph ph-ice-cream"></i>
+                        @else <i class="ph ph-star"></i>
                         @endif
                     </div>
                     <div class="menu-mini-name">{{ strtoupper($item->name) }}</div>
@@ -299,8 +302,8 @@
             <div class="admin-card-body" style="display:flex; flex-direction:column; gap:0.75rem;">
                 @foreach($otherPromos as $other)
                 <a href="{{ route('promotions.show', $other) }}" class="other-promo-card">
-                    @if($other->image_path)
-                        <img src="{{ Storage::url($other->image_path) }}" class="other-promo-thumb" alt="{{ $other->title }}">
+                    @if($other->image_url)
+                        <img src="{{ $other->image_url }}" class="other-promo-thumb" alt="{{ $other->title }}">
                     @else
                         <div class="other-promo-emoji">🎉</div>
                     @endif

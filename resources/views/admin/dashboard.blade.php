@@ -5,25 +5,64 @@
 @section('content')
 
 <div class="stat-grid" style="margin-bottom:2rem;">
-    <div class="stat-card orange">
-        <div class="stat-icon">🍔</div>
-        <div class="stat-value">{{ $stats['total_items'] }}</div>
-        <div class="stat-label">Productos en menú</div>
+    <div class="stat-card" style="background:var(--bg-card); border:1px solid var(--border); box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+        <div class="stat-icon" style="color:var(--primary-light); font-size:2rem; background:rgba(224,120,32,0.1); width:50px; height:50px; display:flex; align-items:center; justify-content:center; border-radius:12px;"><i class="ph ph-hamburger"></i></div>
+        <div class="stat-value" style="font-size:1.8rem; margin-top:0.5rem;">{{ $stats['total_items'] }}</div>
+        <div class="stat-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Productos</div>
     </div>
-    <div class="stat-card amber">
-        <div class="stat-icon">📦</div>
-        <div class="stat-value">{{ $stats['total_orders'] }}</div>
-        <div class="stat-label">Pedidos totales</div>
+    <div class="stat-card" style="background:var(--bg-card); border:1px solid var(--border); box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+        <div class="stat-icon" style="color:#e8b84a; font-size:2rem; background:rgba(232,184,74,0.1); width:50px; height:50px; display:flex; align-items:center; justify-content:center; border-radius:12px;"><i class="ph ph-package"></i></div>
+        <div class="stat-value" style="font-size:1.8rem; margin-top:0.5rem;">{{ $stats['total_orders'] }}</div>
+        <div class="stat-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Pedidos</div>
     </div>
-    <div class="stat-card green">
-        <div class="stat-icon">👥</div>
-        <div class="stat-value">{{ $stats['total_clients'] }}</div>
-        <div class="stat-label">Clientes registrados</div>
+    <div class="stat-card" style="background:var(--bg-card); border:1px solid var(--border); box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+        <div class="stat-icon" style="color:#86efac; font-size:2rem; background:rgba(134,239,172,0.1); width:50px; height:50px; display:flex; align-items:center; justify-content:center; border-radius:12px;"><i class="ph ph-users"></i></div>
+        <div class="stat-value" style="font-size:1.8rem; margin-top:0.5rem;">{{ $stats['total_clients'] }}</div>
+        <div class="stat-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Clientes</div>
     </div>
-    <div class="stat-card red">
-        <div class="stat-icon">🔥</div>
-        <div class="stat-value">{{ $stats['pending_orders'] }}</div>
-        <div class="stat-label">Pedidos activos</div>
+    <div class="stat-card" style="background:var(--bg-card); border:1px solid var(--border); box-shadow:0 4px 15px rgba(0,0,0,0.2);">
+        <div class="stat-icon" style="color:#fca5a5; font-size:2rem; background:rgba(252,165,165,0.1); width:50px; height:50px; display:flex; align-items:center; justify-content:center; border-radius:12px;"><i class="ph ph-activity"></i></div>
+        <div class="stat-value" style="font-size:1.8rem; margin-top:0.5rem;">{{ $stats['pending_orders'] }}</div>
+        <div class="stat-label" style="font-size:0.8rem; text-transform:uppercase; letter-spacing:1px;">Activos</div>
+    </div>
+</div>
+
+{{-- KPIs de Productos --}}
+<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:1.5rem; margin-bottom:2rem;">
+    <div class="admin-card" style="border-left: 4px solid var(--primary);">
+        <div class="admin-card-body">
+            <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:0.5rem;"><i class="ph ph-trend-up"></i> Producto más vendido</div>
+            @if($mostSold)
+                <div style="font-size:1.1rem; color:var(--text-light); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $mostSold->name }}</div>
+                <div style="font-size:0.85rem; color:var(--primary-light); margin-top:0.25rem;">{{ $mostSold->total_sold }} unidades vendidas</div>
+            @else
+                <div style="color:var(--text-muted); font-style:italic;">No hay datos aún</div>
+            @endif
+        </div>
+    </div>
+    
+    <div class="admin-card" style="border-left: 4px solid #fca5a5;">
+        <div class="admin-card-body">
+            <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:0.5rem;"><i class="ph ph-trend-down"></i> Producto menos vendido</div>
+            @if($leastSold)
+                <div style="font-size:1.1rem; color:var(--text-light); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $leastSold->name }}</div>
+                <div style="font-size:0.85rem; color:#fca5a5; margin-top:0.25rem;">Solo {{ $leastSold->total_sold }} unidades vendidas</div>
+            @else
+                <div style="color:var(--text-muted); font-style:italic;">No hay datos aún</div>
+            @endif
+        </div>
+    </div>
+    
+    <div class="admin-card" style="border-left: 4px solid #93c5fd;">
+        <div class="admin-card-body">
+            <div style="color:var(--text-muted); font-size:0.75rem; text-transform:uppercase; font-weight:700; letter-spacing:1px; margin-bottom:0.5rem;"><i class="ph ph-eye"></i> Más interactuado (vistas)</div>
+            @if($mostViewed && $mostViewed->views_count > 0)
+                <div style="font-size:1.1rem; color:var(--text-light); font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ $mostViewed->name }}</div>
+                <div style="font-size:0.85rem; color:#93c5fd; margin-top:0.25rem;">{{ $mostViewed->views_count }} interacciones de clientes</div>
+            @else
+                <div style="color:var(--text-muted); font-style:italic;">No hay datos aún</div>
+            @endif
+        </div>
     </div>
 </div>
 
@@ -37,9 +76,9 @@
         </div>
         <div style="overflow-x:auto;">
             @if($recent_orders->isEmpty())
-                <div style="padding:2rem; text-align:center; color:var(--text-muted);">
-                    <div style="font-size:3rem; margin-bottom:0.75rem;">📭</div>
-                    <p>Aún no hay pedidos registrados.</p>
+                <div style="padding:4rem 2rem; text-align:center; color:var(--text-muted);">
+                    <div style="font-size:4rem; margin-bottom:1rem; opacity:0.5;"><i class="ph ph-mailbox"></i></div>
+                    <p style="font-size:1.1rem;">Aún no hay pedidos registrados.</p>
                 </div>
             @else
                 <table class="admin-table">
@@ -78,39 +117,21 @@
 
 </div>
 
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:1.5rem; margin-top:1.5rem;">
+<div style="margin-top:1.5rem;">
     <div class="admin-card">
         <div class="admin-card-header">
-            <span class="admin-card-title">⚡ Acciones rápidas</span>
+            <span class="admin-card-title"><i class="ph ph-lightning"></i> Acciones rápidas</span>
         </div>
-        <div class="admin-card-body" style="display:flex; flex-direction:column; gap:0.75rem;">
-            <a href="{{ route('admin.menu-items.create') }}" class="btn btn-primary">
-                ➕ Añadir nuevo producto
+        <div class="admin-card-body" style="display:flex; gap:1rem;">
+            <a href="{{ route('admin.menu-items.create') }}" class="btn btn-primary" style="flex:1;">
+                <i class="ph ph-plus-circle"></i> Añadir nuevo producto
             </a>
-            <a href="{{ route('admin.orders.index', ['status'=>'pending']) }}" class="btn btn-ghost">
-                ⏳ Ver pedidos pendientes
+            <a href="{{ route('admin.orders.index', ['status'=>'pending']) }}" class="btn btn-ghost" style="flex:1; border:1px solid var(--border);">
+                <i class="ph ph-hourglass-high"></i> Ver pedidos pendientes
             </a>
-            <a href="{{ route('admin.orders.index', ['status'=>'preparing']) }}" class="btn btn-ghost">
-                🔥 Ver pedidos en preparación
+            <a href="{{ route('admin.orders.index', ['status'=>'preparing']) }}" class="btn btn-ghost" style="flex:1; border:1px solid var(--border);">
+                <i class="ph ph-cooking-pot"></i> Ver pedidos en preparación
             </a>
-        </div>
-    </div>
-
-    <div class="admin-card">
-        <div class="admin-card-header">
-            <span class="admin-card-title">🔐 Credenciales de prueba</span>
-        </div>
-        <div class="admin-card-body">
-            <div style="margin-bottom:1rem; padding:1rem; background:rgba(224,120,32,0.07); border-radius:10px; border:1px solid rgba(224,120,32,0.15);">
-                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;">👑 Administrador</div>
-                <div style="font-size:0.88rem; color:var(--text-light);">📧 admin@mrsabor.com</div>
-                <div style="font-size:0.88rem; color:var(--text-mid);">🔑 Admin123!</div>
-            </div>
-            <div style="padding:1rem; background:rgba(255,255,255,0.04); border-radius:10px; border:1px solid var(--border);">
-                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.4rem;">👤 Cliente de prueba</div>
-                <div style="font-size:0.88rem; color:var(--text-light);">📧 cliente@mrsabor.com</div>
-                <div style="font-size:0.88rem; color:var(--text-mid);">🔑 Cliente123!</div>
-            </div>
         </div>
     </div>
 </div>

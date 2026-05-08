@@ -15,7 +15,7 @@ const menuItems = {
         name: @json($item->name),
         description: @json($item->description ?? ''),
         price: "{{ $item->price_formatted }}",
-        image: "{{ $item->image_path ? Storage::url($item->image_path) : '' }}"
+        image: "{{ $item->image_url ?? '' }}"
     },
     @endforeach
 };

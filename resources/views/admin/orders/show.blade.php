@@ -35,6 +35,24 @@
                             @if($item->menuItem)
                                 <div style="font-size:0.75rem; color:var(--text-muted);">{{ $item->menuItem->category }}</div>
                             @endif
+                            @if(is_array($item->customizations))
+                                <div style="margin-top:0.4rem; font-size:0.8rem;">
+                                    @if(!empty($item->customizations['removed']))
+                                        <div style="color:#d9534f; margin-bottom:0.2rem;">
+                                            <strong style="color:#d9534f; font-size:0.75rem;">SIN:</strong> 
+                                            {{ implode(', ', $item->customizations['removed']) }}
+                                        </div>
+                                    @endif
+                                    @if(!empty($item->customizations['extras']))
+                                        <div style="color:#5cb85c;">
+                                            <strong style="color:#5cb85c; font-size:0.75rem;">EXTRAS:</strong> 
+                                            @foreach($item->customizations['extras'] as $extra)
+                                                {{ $extra['name'] }} (+${{ number_format($extra['price'], 0) }})@if(!$loop->last), @endif
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
                         </td>
                         <td>
                             @php
@@ -61,10 +79,34 @@
                 <span class="admin-card-title">📍 Información adicional</span>
             </div>
             <div class="admin-card-body">
-                @if($order->address)
+                @if($order->payment_method)
+                    <div style="margin-bottom:1rem; padding-bottom:1rem; border-bottom:1px solid var(--border);">
+                        <div class="form-label">Tipo de Pedido</div>
+                        <div style="color:var(--text-light); margin-bottom: 1rem;">
+                            @if($order->order_type === 'pickup')
+                                <span class="badge" style="background:rgba(255,255,255,0.1); color:#fff; font-size:1rem; padding: 0.5rem 1rem;">🏪 Recoger en el Local</span>
+                            @else
+                                <span class="badge" style="background:rgba(224,120,32,0.15); color:var(--primary-light); font-size:1rem; padding: 0.5rem 1rem;">🛵 Entrega a Domicilio</span>
+                            @endif
+                        </div>
+
+                        <div class="form-label">Método de pago</div>
+                        <div style="color:var(--text-light); display:flex; align-items:center; gap:0.5rem;">
+                            @if($order->payment_method === 'transfer')
+                                🏦 Transferencia Bancaria
+                                @if($order->payment_receipt_url)
+                                    <a href="{{ $order->payment_receipt_url }}" target="_blank" class="btn btn-ghost btn-sm" style="padding:0.2rem 0.5rem; font-size:0.75rem;">Ver Comprobante 👀</a>
+                                @endif
+                            @else
+                                💵 Efectivo
+                            @endif
+                        </div>
+                    </div>
+                @endif
+                @if($order->order_type !== 'pickup' && ($order->address || $order->userAddress))
                     <div style="margin-bottom:0.75rem;">
                         <div class="form-label">Dirección de entrega</div>
-                        <div style="color:var(--text-light);">{{ $order->address }}</div>
+                        <div style="color:var(--text-light);">{{ $order->address ?? ($order->userAddress ? $order->userAddress->address : '') }}</div>
                     </div>
                 @endif
                 @if($order->notes)
@@ -103,6 +145,7 @@
                 {{-- Timeline visual --}}
                 @php
                     $steps = [
+                        'pending_payment' => ['💳', 'Pago'],
                         'pending'   => ['⏳', 'Pendiente'],
                         'preparing' => ['🔥', 'Preparación'],
                         'on_way'    => ['🚀', 'En Camino'],
@@ -134,6 +177,7 @@
                         @csrf @method('PATCH')
                         <div style="display:flex; gap:0.75rem; align-items:center;">
                             <select name="status" class="form-input" style="flex:1;">
+                                <option value="pending_payment" {{ $order->status === 'pending_payment' ? 'selected' : '' }}>💳 Pendiente de Pago</option>
                                 <option value="pending"   {{ $order->status === 'pending'   ? 'selected' : '' }}>⏳ Pendiente</option>
                                 <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>🔥 En Preparación</option>
                                 <option value="on_way"    {{ $order->status === 'on_way'    ? 'selected' : '' }}>🚀 En Camino</option>

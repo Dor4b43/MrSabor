@@ -19,4 +19,15 @@ class Promotion extends Model
     {
         return $query->where('is_active', true)->orderBy('sort_order')->orderBy('id');
     }
+
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image_path) {
+            return null;
+        }
+        if (str_starts_with($this->image_path, 'direct:')) {
+            return substr($this->image_path, 7);
+        }
+        return \Illuminate\Support\Facades\Storage::url($this->image_path);
+    }
 }

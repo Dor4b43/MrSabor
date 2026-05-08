@@ -34,8 +34,8 @@
                     @foreach($items as $item)
                     <tr>
                         <td>
-                            @if($item->image_path)
-                                <img src="{{ Storage::url($item->image_path) }}" class="img-preview" alt="{{ $item->name }}">
+                            @if($item->image_url)
+                                <img src="{{ $item->image_url }}" class="img-preview" alt="{{ $item->name }}">
                             @else
                                 <div class="img-placeholder">🍔</div>
                             @endif

@@ -62,8 +62,8 @@
                     @foreach($promotions as $promo)
                     <tr>
                         <td>
-                            @if($promo->image_path)
-                                <img src="{{ Storage::url($promo->image_path) }}" class="img-preview" alt="{{ $promo->title }}">
+                            @if($promo->image_url)
+                                <img src="{{ $promo->image_url }}" class="img-preview" alt="{{ $promo->title }}">
                             @else
                                 <div class="img-placeholder">🎉</div>
                             @endif

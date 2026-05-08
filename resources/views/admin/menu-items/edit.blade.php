@@ -57,11 +57,39 @@
                 </div>
             </div>
 
+            @php
+                $customs = is_array($menuItem->customizations) ? $menuItem->customizations : [];
+                $removables = implode("\n", $customs['removable'] ?? []);
+                
+                $extrasArr = [];
+                foreach ($customs['extras'] ?? [] as $extra) {
+                    if (isset($extra['name']) && isset($extra['price'])) {
+                        $extrasArr[] = $extra['name'] . ' | ' . $extra['price'];
+                    }
+                }
+                $extras = implode("\n", $extrasArr);
+            @endphp
+
+            <div class="admin-form-row">
+                <div class="admin-form-group">
+                    <label class="form-label" for="removable_ingredients">Ingredientes que se pueden quitar (Opcional)</label>
+                    <textarea id="removable_ingredients" name="removable_ingredients" rows="3" class="form-input"
+                        placeholder="Ej:&#10;Cebolla&#10;Salsas&#10;Tomate">{{ old('removable_ingredients', $removables) }}</textarea>
+                    <small style="color:var(--text-muted); font-size:0.75rem;">Un ingrediente por línea.</small>
+                </div>
+                <div class="admin-form-group">
+                    <label class="form-label" for="extra_ingredients">Adiciones con costo (Opcional)</label>
+                    <textarea id="extra_ingredients" name="extra_ingredients" rows="3" class="form-input"
+                        placeholder="Ej:&#10;Tocineta | 3000&#10;Queso | 2000">{{ old('extra_ingredients', $extras) }}</textarea>
+                    <small style="color:var(--text-muted); font-size:0.75rem;">Formato: Nombre | Precio. Uno por línea.</small>
+                </div>
+            </div>
+
             <div class="admin-form-group">
                 <label class="form-label">Imagen actual</label>
                 <div style="margin-bottom:0.75rem;">
-                    @if($menuItem->image_path)
-                        <img src="{{ Storage::url($menuItem->image_path) }}" class="img-preview" style="width:120px; height:120px;" alt="{{ $menuItem->name }}">
+                    @if($menuItem->image_url)
+                        <img src="{{ $menuItem->image_url }}" class="img-preview" style="width:120px; height:120px;" alt="{{ $menuItem->name }}">
                     @else
                         <div class="img-placeholder" style="width:120px; height:120px; font-size:3rem;">🍔</div>
                     @endif

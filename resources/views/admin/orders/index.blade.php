@@ -6,7 +6,7 @@
 
 {{-- Filtros por estado --}}
 <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-    @foreach(['all'=>'Todos', 'pending'=>'⏳ Pendientes', 'preparing'=>'🔥 En Preparación', 'on_way'=>'🚀 En Camino', 'delivered'=>'✅ Entregados'] as $key => $label)
+    @foreach(['all'=>'Todos', 'pending_payment'=>'💳 Pagos', 'pending'=>'⏳ Pendientes', 'preparing'=>'🔥 En Preparación', 'on_way'=>'🚀 En Camino', 'delivered'=>'✅ Entregados'] as $key => $label)
         <a href="{{ route('admin.orders.index', ['status'=>$key]) }}"
            class="btn btn-sm {{ $status === $key ? 'btn-primary' : 'btn-ghost' }}">
             {{ $label }}
@@ -30,6 +30,7 @@
                     <tr>
                         <th>#</th>
                         <th>Cliente</th>
+                        <th>Tipo</th>
                         <th>Items</th>
                         <th>Total</th>
                         <th>Estado</th>
@@ -45,6 +46,13 @@
                             <div style="font-weight:700; color:var(--text-light);">{{ $order->user->name }}</div>
                             <div style="font-size:0.75rem; color:var(--text-muted);">{{ $order->user->email }}</div>
                         </td>
+                        <td>
+                            @if($order->order_type === 'pickup')
+                                <span class="badge" style="background:rgba(255,255,255,0.1); color:#fff;">🏪 Recoger</span>
+                            @else
+                                <span class="badge" style="background:rgba(224,120,32,0.15); color:var(--primary-light);">🛵 Domicilio</span>
+                            @endif
+                        </td>
                         <td style="color:var(--text-mid);">{{ $order->items->sum('quantity') }} item(s)</td>
                         <td style="color:var(--primary-light); font-weight:700;">{{ $order->total_formatted }}</td>
                         <td>
@@ -54,6 +62,7 @@
                                 <select name="status"
                                     onchange="document.getElementById('status-form-{{ $order->id }}').submit()"
                                     style="background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-light); padding:0.35rem 0.6rem; border-radius:8px; font-size:0.8rem; cursor:pointer; font-family:'Poppins',sans-serif;">
+                                    <option value="pending_payment" {{ $order->status === 'pending_payment' ? 'selected' : '' }}>💳 Pend. Pago</option>
                                     <option value="pending"   {{ $order->status === 'pending'   ? 'selected' : '' }}>⏳ Pendiente</option>
                                     <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>🔥 En Preparación</option>
                                     <option value="on_way"    {{ $order->status === 'on_way'    ? 'selected' : '' }}>🚀 En Camino</option>

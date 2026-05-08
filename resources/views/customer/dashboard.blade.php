@@ -77,10 +77,16 @@
 
                 <div class="menu-grid" style="margin-bottom:1.5rem;">
                     @foreach($items as $item)
-                    <div class="product-card" id="card-{{ $item->id }}">
+                    <div class="product-card" id="card-{{ $item->id }}" style="cursor:pointer;"
+                         data-name="{{ strtoupper($item->name) }}"
+                         data-desc="{{ $item->description }}"
+                         data-price="{{ $item->price_formatted }}"
+                         data-img="{{ $item->image_url }}"
+                         data-emoji="@if($category === 'Burgers') 🍔 @elseif($category === 'Salchipapas') 🍟 @elseif($category === 'Platos') 🍽️ @elseif($category === 'Bebidas') 🥤 @else 🌟 @endif"
+                         onclick="openProductModal(this)">
                         <div class="product-emoji-wrap">
-                            @if($item->image_path)
-                                <img src="{{ Storage::url($item->image_path) }}"
+                            @if($item->image_url)
+                                <img src="{{ $item->image_url }}"
                                      alt="{{ $item->name }}"
                                      style="width:100%; height:160px; object-fit:cover;">
                             @else
@@ -104,11 +110,11 @@
                                 <span class="product-price">{{ $item->price_formatted }}</span>
                                 {{-- Contador de cantidad --}}
                                 <div style="display:flex; align-items:center; gap:0.5rem;">
-                                    <button type="button" onclick="changeQty({{ $item->id }}, -1)"
+                                    <button type="button" onclick="event.stopPropagation(); changeQty({{ $item->id }}, -1)"
                                         style="width:28px; height:28px; border-radius:50%; background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-light); cursor:pointer; font-size:1rem; display:flex; align-items:center; justify-content:center;">−</button>
                                     <span id="qty-display-{{ $item->id }}"
                                           style="min-width:20px; text-align:center; font-weight:700; color:var(--text-light);">0</span>
-                                    <button type="button" onclick="changeQty({{ $item->id }}, 1)"
+                                    <button type="button" onclick="event.stopPropagation(); changeQty({{ $item->id }}, 1)"
                                         class="btn-add">+</button>
                                     <input type="hidden" name="items[{{ $item->id }}][id]"       value="{{ $item->id }}">
                                     <input type="hidden" name="items[{{ $item->id }}][quantity]" value="0"
@@ -157,6 +163,55 @@
         </form>
     @endif
 
+</div>
+
+{{-- ══════════════════════════════════════════════════════════
+     MODAL DE PRODUCTO
+══════════════════════════════════════════════════════════ --}}
+<style>
+/* ── PRODUCT MODAL ─────────────────────────────────────────── */
+.product-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+    z-index: 2000; display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+}
+.product-modal-overlay.active { opacity: 1; pointer-events: auto; }
+.product-modal {
+    background: var(--bg-card, #1A0E06); border: 1px solid rgba(224,120,32,0.3);
+    border-radius: 20px; width: 90%; max-width: 500px;
+    overflow: hidden; transform: translateY(20px); transition: transform 0.3s ease;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6); position: relative;
+}
+.product-modal-overlay.active .product-modal { transform: translateY(0); }
+.product-modal-close {
+    position: absolute; top: 1rem; right: 1rem;
+    background: rgba(0,0,0,0.5); color: #fff; width: 32px; height: 32px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border: none; font-size: 1.2rem; z-index: 10;
+}
+.product-modal-close:hover { background: rgba(224,120,32,0.8); }
+.product-modal-img-wrap { height: 250px; background: #0E0A06; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.product-modal-img { width: 100%; height: 100%; object-fit: cover; }
+.product-modal-body { padding: 2rem; }
+.product-modal-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: #F2E8D5; letter-spacing: 1.5px; margin-bottom: 0.5rem; line-height: 1; }
+.product-modal-price { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #F09040; margin-bottom: 1rem; }
+.product-modal-desc { color: #8A7460; font-size: 0.95rem; line-height: 1.6; }
+</style>
+
+<div class="product-modal-overlay" id="productModalOverlay" onclick="closeProductModal()">
+    <div class="product-modal" onclick="event.stopPropagation()">
+        <button class="product-modal-close" onclick="closeProductModal()">×</button>
+        <div class="product-modal-img-wrap">
+            <img id="pm-img" class="product-modal-img" src="" alt="Producto" style="display:none;">
+            <div id="pm-emoji" style="font-size: 5rem; display:none;">🍔</div>
+        </div>
+        <div class="product-modal-body">
+            <div id="pm-title" class="product-modal-title">Nombre Producto</div>
+            <div id="pm-price" class="product-modal-price">$0</div>
+            <div id="pm-desc" class="product-modal-desc">Descripción detallada...</div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -233,6 +288,34 @@ document.getElementById('order-form')?.addEventListener('submit', function(e) {
         }
     }
 });
+
+// ── Modal de Producto ─────────────────────────────────────
+function openProductModal(el) {
+    const name  = el.dataset.name;
+    const desc  = el.dataset.desc;
+    const price = el.dataset.price;
+    const img   = el.dataset.img;
+    const emoji = el.dataset.emoji.trim();
+
+    document.getElementById('pm-title').innerText = name;
+    document.getElementById('pm-price').innerText = price;
+    document.getElementById('pm-desc').innerText  = desc;
+
+    if (img) {
+        document.getElementById('pm-img').src = img;
+        document.getElementById('pm-img').style.display = 'block';
+        document.getElementById('pm-emoji').style.display = 'none';
+    } else {
+        document.getElementById('pm-emoji').innerText = emoji;
+        document.getElementById('pm-img').style.display = 'none';
+        document.getElementById('pm-emoji').style.display = 'block';
+    }
+
+    document.getElementById('productModalOverlay').classList.add('active');
+}
+function closeProductModal() {
+    document.getElementById('productModalOverlay').classList.remove('active');
+}
 </script>
 
 </x-app-layout>

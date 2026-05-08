@@ -10,10 +10,13 @@ use Illuminate\Support\Facades\Route;
 // ── LANDING ──────────────────────────────────────────────────
 Route::get('/', [LandingController::class, 'index']);
 Route::get('/promociones/{promotion}', [LandingController::class, 'showPromotion'])->name('promotions.show');
+Route::post('/api/menu-items/{id}/view', [LandingController::class, 'trackView']);
 
 // ── CLIENTE (autenticado) ─────────────────────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard', function () {
+        return redirect('/');
+    })->name('dashboard');
 
     // Pedidos del cliente
     Route::get('/mis-pedidos',          [CustomerOrderController::class, 'index'])->name('orders.index');

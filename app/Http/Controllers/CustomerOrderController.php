@@ -29,8 +29,12 @@ class CustomerOrderController extends Controller
             'items'            => 'required|array|min:1',
             'items.*.id'       => 'required|exists:menu_items,id',
             'items.*.quantity' => 'required|integer|min:1|max:20',
-            'address_id'       => 'required|exists:addresses,id',
+            'address_id'       => 'nullable|exists:addresses,id',
+            'new_address'      => 'nullable|string|max:255',
             'notes'            => 'nullable|string|max:500',
+            'payment_method'   => 'required|in:cash,transfer',
+            'payment_receipt'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'order_type'       => 'required|in:delivery,pickup',
         ]);
 
         $total = 0;
@@ -42,12 +46,26 @@ class CustomerOrderController extends Controller
 
             $qty = (int) $item['quantity'];
             $price = (float) $menuItem->price;
+            
+            $customizations = null;
+            if (!empty($item['customizations'])) {
+                $customizations = json_decode($item['customizations'], true);
+                if (isset($customizations['extras']) && is_array($customizations['extras'])) {
+                    foreach ($customizations['extras'] as $extra) {
+                        if (isset($extra['price'])) {
+                            $price += (float) $extra['price'];
+                        }
+                    }
+                }
+            }
+
             $total += $price * $qty;
 
             $orderItemsData[] = [
-                'menu_item_id' => $menuItem->id,
-                'quantity'     => $qty,
-                'unit_price'   => $price,
+                'menu_item_id'   => $menuItem->id,
+                'quantity'       => $qty,
+                'unit_price'     => $price,
+                'customizations' => $customizations,
             ];
         }
 
@@ -55,16 +73,47 @@ class CustomerOrderController extends Controller
             return back()->with('error', 'No hay items disponibles en tu pedido.');
         }
 
-        DB::transaction(function () use ($request, $total, $orderItemsData) {
-            $deliveryFee = Setting::where('key', 'delivery_fee')->value('value') ?? 0;
+        $receiptPath = null;
+        if ($request->payment_method === 'transfer' && $request->hasFile('payment_receipt')) {
+            $receiptPath = $request->file('payment_receipt')->store('receipts', 'public');
+        } elseif ($request->payment_method === 'transfer') {
+            return back()->with('error', 'Debes adjuntar el comprobante de transferencia.');
+        }
+
+        DB::transaction(function () use ($request, $total, $orderItemsData, $receiptPath) {
+            $addressId = $request->address_id;
+            $deliveryFee = 0;
+            $orderType = $request->order_type;
+
+            if ($orderType === 'delivery') {
+                // Crear nueva dirección al vuelo si no hay address_id
+                if (!$addressId && $request->filled('new_address')) {
+                    $newAddr = \App\Models\Address::create([
+                        'user_id' => Auth::id(),
+                        'address' => $request->new_address,
+                        'is_main' => \App\Models\Address::where('user_id', Auth::id())->exists() ? false : true,
+                    ]);
+                    $addressId = $newAddr->id;
+                } elseif (!$addressId) {
+                    throw new \Exception('Debes proporcionar una dirección de entrega.');
+                }
+                $deliveryFee = \App\Models\Setting::where('key', 'delivery_fee')->value('value') ?? 0;
+            } else {
+                $addressId = null;
+            }
             
-            $order = Order::create([
-                'user_id'      => Auth::id(),
-                'status'       => 'pending',
-                'total'        => $total,
-                'delivery_fee' => $deliveryFee,
-                'address_id'   => $request->address_id,
-                'notes'        => $request->notes,
+            $status = $request->payment_method === 'transfer' ? 'pending_payment' : 'pending';
+
+            $order = \App\Models\Order::create([
+                'user_id'              => Auth::id(),
+                'status'               => $status,
+                'total'                => $total,
+                'delivery_fee'         => $deliveryFee,
+                'address_id'           => $addressId,
+                'notes'                => $request->notes,
+                'payment_method'       => $request->payment_method,
+                'payment_receipt_path' => $receiptPath,
+                'order_type'           => $orderType,
             ]);
 
             foreach ($orderItemsData as $itemData) {

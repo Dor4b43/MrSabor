@@ -9,11 +9,12 @@ class MenuItem extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'price', 'description', 'image_path', 'category', 'category_id', 'is_available'];
+    protected $fillable = ['name', 'price', 'description', 'image_path', 'category', 'category_id', 'is_available', 'customizations'];
 
     protected $casts = [
-        'price'        => 'decimal:2',
-        'is_available' => 'boolean',
+        'price'          => 'decimal:2',
+        'is_available'   => 'boolean',
+        'customizations' => 'array',
     ];
 
     public function orderItems()
@@ -34,4 +35,21 @@ class MenuItem extends Model
         }
         return '$' . number_format($val, 0);
     }
+
+    /**
+     * Resuelve la URL de la imagen.
+     * - Si empieza con "direct:", usa la ruta pública directa.
+     * - Si no, usa Storage::url() (archivos subidos via admin).
+     */
+    public function getImageUrlAttribute(): ?string
+    {
+        if (!$this->image_path) {
+            return null;
+        }
+        if (str_starts_with($this->image_path, 'direct:')) {
+            return substr($this->image_path, 7); // quita "direct:"
+        }
+        return \Illuminate\Support\Facades\Storage::url($this->image_path);
+    }
 }
+

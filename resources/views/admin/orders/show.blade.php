@@ -139,53 +139,47 @@
         {{-- Estado actual --}}
         <div class="admin-card">
             <div class="admin-card-header">
-                <span class="admin-card-title">📊 Estado del pedido</span>
+                <span class="admin-card-title"><i class="ph ph-sliders"></i> Control de estado rápido</span>
             </div>
             <div class="admin-card-body">
                 {{-- Timeline visual --}}
+                {{-- Timeline visual interactiva --}}
                 @php
                     $steps = [
-                        'pending_payment' => ['💳', 'Pago'],
-                        'pending'   => ['⏳', 'Pendiente'],
-                        'preparing' => ['🔥', 'Preparación'],
-                        'on_way'    => ['🚀', 'En Camino'],
-                        'delivered' => ['✅', 'Entregado'],
+                        'pending_payment' => ['<i class="ph ph-credit-card"></i>', 'Pago'],
+                        'pending'   => ['<i class="ph ph-hourglass-high"></i>', 'Pendiente'],
+                        'preparing' => ['<i class="ph ph-cooking-pot"></i>', 'Preparación'],
+                        'on_way'    => ['<i class="ph ph-rocket"></i>', 'En Camino'],
+                        'delivered' => ['<i class="ph ph-check-circle"></i>', 'Entregado'],
                     ];
                     $currentIdx = $order->status_index;
                 @endphp
 
-                <div class="status-timeline">
+                <form method="POST" action="{{ route('admin.orders.status', $order) }}" id="status-timeline-form">
+                    @csrf @method('PATCH')
+                    <input type="hidden" name="status" id="status-timeline-input" value="{{ $order->status }}">
+                </form>
+
+                <div class="status-timeline" style="margin-top: 1rem; margin-bottom: 2rem;">
                     @php $stepKeys = array_keys($steps); @endphp
                     @foreach($steps as $key => [$icon, $label])
                         @php $idx = array_search($key, $stepKeys); @endphp
-                        <div class="st-step">
-                            @if($idx < count($stepKeys) - 1)
-                                <div style="position:absolute; top:19px; left:50%; width:100%; height:3px; z-index:0;
-                                     background:{{ $idx < $currentIdx ? '#6dc558' : 'var(--border)' }};"></div>
-                            @endif
-                            <div class="st-dot {{ $idx < $currentIdx ? 'done' : ($idx === $currentIdx ? 'active' : '') }}">
-                                {{ $icon }}
+                        <div class="st-step {{ $idx < $currentIdx ? 'completed' : '' }}" 
+                             style="cursor: pointer;" 
+                             onclick="if('{{ $order->status }}' !== '{{ $key }}') { document.getElementById('status-timeline-input').value='{{ $key }}'; document.getElementById('status-timeline-form').submit(); }"
+                             title="Haz clic para cambiar a: {{ $label }}">
+                            <div class="st-dot {{ $idx < $currentIdx ? 'done' : ($idx === $currentIdx ? 'active' : '') }}"
+                                 onmouseover="this.style.transform='scale(1.15)'; this.style.borderColor='var(--primary-light)'"
+                                 onmouseout="this.style.transform=''; this.style.borderColor=''">
+                                {!! $icon !!}
                             </div>
-                            <div class="st-label">{{ $label }}</div>
+                            <div class="st-label" style="{{ $idx === $currentIdx ? 'color: var(--primary-light); font-size: 0.8rem;' : '' }}">{{ $label }}</div>
                         </div>
                     @endforeach
                 </div>
-
-                <div style="margin-top:1.5rem;">
-                    <div class="form-label" style="margin-bottom:0.6rem;">Cambiar estado</div>
-                    <form method="POST" action="{{ route('admin.orders.status', $order) }}">
-                        @csrf @method('PATCH')
-                        <div style="display:flex; gap:0.75rem; align-items:center;">
-                            <select name="status" class="form-input" style="flex:1;">
-                                <option value="pending_payment" {{ $order->status === 'pending_payment' ? 'selected' : '' }}>💳 Pendiente de Pago</option>
-                                <option value="pending"   {{ $order->status === 'pending'   ? 'selected' : '' }}>⏳ Pendiente</option>
-                                <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>🔥 En Preparación</option>
-                                <option value="on_way"    {{ $order->status === 'on_way'    ? 'selected' : '' }}>🚀 En Camino</option>
-                                <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>✅ Entregado</option>
-                            </select>
-                            <button type="submit" class="btn btn-primary btn-sm">Guardar</button>
-                        </div>
-                    </form>
+                
+                <div style="text-align: center; font-size: 0.8rem; color: var(--text-muted); background: rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 8px;">
+                    <i class="ph ph-info"></i> Haz clic directamente sobre los círculos de la línea de tiempo para actualizar el estado del pedido al instante.
                 </div>
             </div>
         </div>

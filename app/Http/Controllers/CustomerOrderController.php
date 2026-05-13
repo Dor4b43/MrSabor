@@ -33,7 +33,7 @@ class CustomerOrderController extends Controller
             'new_address'      => 'nullable|string|max:255',
             'notes'            => 'nullable|string|max:500',
             'payment_method'   => 'required|in:cash,transfer',
-            'payment_receipt'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'payment_receipt'  => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
             'order_type'       => 'required|in:delivery,pickup',
         ]);
 

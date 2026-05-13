@@ -6,10 +6,17 @@
 
 {{-- Filtros por estado --}}
 <div style="display:flex; gap:0.75rem; margin-bottom:1.5rem; flex-wrap:wrap;">
-    @foreach(['all'=>'Todos', 'pending_payment'=>'💳 Pagos', 'pending'=>'⏳ Pendientes', 'preparing'=>'🔥 En Preparación', 'on_way'=>'🚀 En Camino', 'delivered'=>'✅ Entregados'] as $key => $label)
+    @foreach([
+        'all' => 'Todos', 
+        'pending_payment' => '<i class="ph ph-credit-card"></i> Pagos', 
+        'pending' => '<i class="ph ph-hourglass-high"></i> Pendientes', 
+        'preparing' => '<i class="ph ph-cooking-pot"></i> Preparación', 
+        'on_way' => '<i class="ph ph-rocket"></i> En Camino', 
+        'delivered' => '<i class="ph ph-check-circle"></i> Entregados'
+    ] as $key => $label)
         <a href="{{ route('admin.orders.index', ['status'=>$key]) }}"
            class="btn btn-sm {{ $status === $key ? 'btn-primary' : 'btn-ghost' }}">
-            {{ $label }}
+            {!! $label !!}
             <span style="background:rgba(255,255,255,0.15); padding:1px 6px; border-radius:10px; font-size:0.72rem;">
                 {{ $counts[$key] }}
             </span>
@@ -21,7 +28,7 @@
     <div style="overflow-x:auto;">
         @if($orders->isEmpty())
             <div style="padding:3rem; text-align:center; color:var(--text-muted);">
-                <div style="font-size:4rem; margin-bottom:1rem;">📭</div>
+                <div style="font-size:4rem; margin-bottom:1rem;"><i class="ph ph-mailbox"></i></div>
                 <p>No hay pedidos con este filtro.</p>
             </div>
         @else
@@ -48,9 +55,9 @@
                         </td>
                         <td>
                             @if($order->order_type === 'pickup')
-                                <span class="badge" style="background:rgba(255,255,255,0.1); color:#fff;">🏪 Recoger</span>
+                                <span class="badge" style="background:rgba(255,255,255,0.1); color:#fff;"><i class="ph ph-storefront"></i> Recoger</span>
                             @else
-                                <span class="badge" style="background:rgba(224,120,32,0.15); color:var(--primary-light);">🛵 Domicilio</span>
+                                <span class="badge" style="background:rgba(224,120,32,0.15); color:var(--primary-light);"><i class="ph ph-moped"></i> Domicilio</span>
                             @endif
                         </td>
                         <td style="color:var(--text-mid);">{{ $order->items->sum('quantity') }} item(s)</td>
@@ -62,17 +69,17 @@
                                 <select name="status"
                                     onchange="document.getElementById('status-form-{{ $order->id }}').submit()"
                                     style="background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-light); padding:0.35rem 0.6rem; border-radius:8px; font-size:0.8rem; cursor:pointer; font-family:'Poppins',sans-serif;">
-                                    <option value="pending_payment" {{ $order->status === 'pending_payment' ? 'selected' : '' }}>💳 Pend. Pago</option>
-                                    <option value="pending"   {{ $order->status === 'pending'   ? 'selected' : '' }}>⏳ Pendiente</option>
-                                    <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>🔥 En Preparación</option>
-                                    <option value="on_way"    {{ $order->status === 'on_way'    ? 'selected' : '' }}>🚀 En Camino</option>
-                                    <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>✅ Entregado</option>
+                                    <option value="pending_payment" {{ $order->status === 'pending_payment' ? 'selected' : '' }}>Pend. Pago</option>
+                                    <option value="pending"   {{ $order->status === 'pending'   ? 'selected' : '' }}>Pendiente</option>
+                                    <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>En Preparación</option>
+                                    <option value="on_way"    {{ $order->status === 'on_way'    ? 'selected' : '' }}>En Camino</option>
+                                    <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Entregado</option>
                                 </select>
                             </form>
                         </td>
                         <td style="font-size:0.8rem; color:var(--text-muted);">{{ $order->created_at->format('d/m/Y H:i') }}</td>
                         <td>
-                            <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-ghost btn-sm">👁️ Ver</a>
+                            <a href="{{ route('admin.orders.show', $order) }}" class="btn btn-ghost btn-sm"><i class="ph ph-eye"></i> Ver</a>
                         </td>
                     </tr>
                     @endforeach

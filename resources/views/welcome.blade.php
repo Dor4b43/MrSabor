@@ -12,63 +12,6 @@
 /* ── RESET LOCAL ───────────────────────────────────────────── */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* ── NAVBAR MCD-STYLE ──────────────────────────────────────── */
-.lp-nav {
-    position: fixed;
-    top: 0; left: 0; right: 0;
-    z-index: 1000;
-    height: 70px;
-    background: rgba(14,10,6,0.93);
-    backdrop-filter: blur(20px);
-    border-bottom: 1px solid rgba(224,160,80,0.1);
-    display: flex;
-    align-items: center;
-    padding: 0 2rem;
-    gap: 2rem;
-    transition: background 0.3s;
-}
-.lp-nav.scrolled { background: rgba(14,10,6,0.99); }
-.lp-nav-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-    flex-shrink: 0;
-}
-.logo-nav-img {
-    height: 48px;
-    width: 48px;
-    object-fit: cover;
-    border-radius: 12px;
-    border: 1.5px solid rgba(224,120,32,0.3);
-    box-shadow: 0 0 12px rgba(224,120,32,0.35);
-    background: #0e0a06;
-}
-.logo-nav-img-wrap {
-    height: 48px;
-    width: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.lp-nav-links {
-    display: flex;
-    gap: 0;
-    list-style: none;
-}
-.lp-nav-links a {
-    display: block;
-    padding: 0.5rem 1.1rem;
-    color: rgba(242,232,213,0.7);
-    text-decoration: none;
-    font-size: 0.9rem;
-    font-weight: 500;
-    transition: color 0.25s;
-    white-space: nowrap;
-}
-.lp-nav-links a:hover { color: #F2E8D5; }
-.lp-nav-right { margin-left: auto; display: flex; gap: 0.75rem; align-items: center; }
-
 /* ── HERO (full viewport) ──────────────────────────────────── */
 .lp-hero {
     position: relative;
@@ -239,6 +182,65 @@
     border-left: none;
     transform: rotate(45deg);
     margin-top: -12px;
+}
+
+/* ── CUSTOM CHECKBOX & RADIO ────────────────────────────────────────── */
+.mr-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(224,120,32,0.4);
+    border-radius: 4px;
+    background: rgba(0,0,0,0.4);
+    cursor: pointer;
+    position: relative;
+    outline: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.mr-checkbox:checked {
+    background: #E07820;
+    border-color: #E07820;
+}
+.mr-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    color: white;
+    font-size: 14px;
+    font-weight: 900;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.mr-radio {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(224,120,32,0.4);
+    border-radius: 50%;
+    background: rgba(0,0,0,0.4);
+    cursor: pointer;
+    position: relative;
+    outline: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+.mr-radio:checked {
+    border-color: #E07820;
+}
+.mr-radio:checked::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #E07820;
+    border-radius: 50%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* ── PROMO CAROUSEL ────────────────────────────────────────── */
@@ -651,7 +653,11 @@
             <div class="user-greeting-nav" style="font-size:0.85rem; color:#8A7460; margin-right:0.5rem; display:none;">
                 Hola, <strong style="color:#F2E8D5;">{{ explode(' ', Auth::user()->name)[0] }}</strong>
             </div>
-            <a href="#menu" class="btn btn-primary btn-sm" title="Ir al menú"><i class="ph ph-fire"></i> Pedir</a>
+            <a onclick="openCheckoutModal()" class="btn btn-ghost btn-sm" style="cursor:pointer; position:relative; padding: 0.5rem 0.6rem; border: 1px solid rgba(224,120,32,0.3); display:flex; align-items:center; overflow:visible;" title="Ver mi carrito">
+                <i class="ph ph-shopping-cart" style="font-size: 1.25rem; color: var(--primary-light);"></i>
+                <span id="nav-cart-badge" style="position:absolute; top:-6px; right:-6px; background:#ef4444; color:white; font-size:0.7rem; font-weight:800; border-radius:10px; min-width:18px; height:18px; display:none; align-items:center; justify-content:center; box-shadow:0 2px 4px rgba(0,0,0,0.5); z-index:10; border: 2px solid #1a1512;">0</span>
+            </a>
+            <a href="#menu" class="btn btn-ghost btn-sm" style="border:1px solid rgba(255,255,255,0.05);" title="Ir al menú"><i class="ph ph-fire" style="color:var(--primary);"></i> Pedir</a>
             <a href="{{ route('profile.edit') }}" class="btn btn-ghost btn-sm" title="Mi Perfil"><i class="ph ph-user"></i> Perfil</a>
             @if(Auth::user()->isAdmin())
                 <a href="{{ route('admin.dashboard') }}" class="btn btn-ghost btn-sm"><i class="ph ph-gear"></i> Admin</a>
@@ -754,7 +760,7 @@
      BARRA DE CATEGORÍAS STICKY (estilo McDonald's)
 ══════════════════════════════════════════════════════════ --}}
 @if($menuItems->isNotEmpty())
-<div class="cat-bar-wrap" id="menu">
+<div class="cat-bar-wrap" id="menu" style="scroll-margin-top: 80px;">
     <div class="cat-bar" id="cat-bar">
         @php
             $catIcons = [
@@ -871,7 +877,7 @@
      MODAL DE CHECKOUT
 ══════════════════════════════════════════════════════════ --}}
 <div class="auth-modal-overlay" id="checkoutModalOverlay" onclick="closeCheckoutModal()">
-    <div class="auth-modal" onclick="event.stopPropagation()" style="max-width:500px;">
+    <div class="auth-modal" onclick="event.stopPropagation()" style="max-width:650px; width:95%;">
         <button type="button" class="auth-modal-close" onclick="closeCheckoutModal()">×</button>
         <h2 class="auth-modal-title" style="font-size:1.8rem;">Detalles del Pedido</h2>
         <p class="auth-modal-subtitle">Revisa tus productos y personalízalos 🔥</p>
@@ -886,11 +892,11 @@
                 <label class="form-label">¿Cómo deseas recibir tu pedido? *</label>
                 <div style="display:flex; gap:1rem;">
                     <label style="flex:1; display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.05); padding:0.75rem; border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1);">
-                        <input type="radio" name="order_type" value="delivery" checked onchange="toggleDeliveryMode(this.value)">
+                        <input type="radio" name="order_type" value="delivery" checked onchange="toggleDeliveryMode(this.value)" class="mr-radio">
                         <span style="color:#F2E8D5; font-size:0.9rem;">🛵 Domicilio</span>
                     </label>
                     <label style="flex:1; display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.05); padding:0.75rem; border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1);">
-                        <input type="radio" name="order_type" value="pickup" onchange="toggleDeliveryMode(this.value)">
+                        <input type="radio" name="order_type" value="pickup" onchange="toggleDeliveryMode(this.value)" class="mr-radio">
                         <span style="color:#F2E8D5; font-size:0.9rem;">🏪 Recoger en local</span>
                     </label>
                 </div>
@@ -924,11 +930,11 @@
                 <label class="form-label">Medio de Pago *</label>
                 <div style="display:flex; gap:1rem;">
                     <label style="flex:1; display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.05); padding:0.75rem; border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1);">
-                        <input type="radio" name="payment_method" value="cash" checked onchange="toggleTransferInfo()">
+                        <input type="radio" name="payment_method" value="cash" checked onchange="toggleTransferInfo()" class="mr-radio">
                         <span style="color:#F2E8D5; font-size:0.9rem;">💵 Efectivo</span>
                     </label>
                     <label style="flex:1; display:flex; align-items:center; gap:0.5rem; background:rgba(255,255,255,0.05); padding:0.75rem; border-radius:8px; cursor:pointer; border:1px solid rgba(255,255,255,0.1);">
-                        <input type="radio" name="payment_method" value="transfer" onchange="toggleTransferInfo()">
+                        <input type="radio" name="payment_method" value="transfer" onchange="toggleTransferInfo()" class="mr-radio">
                         <span style="color:#F2E8D5; font-size:0.9rem;">🏦 Transferencia</span>
                     </label>
                 </div>
@@ -936,16 +942,28 @@
 
             {{-- Info Transferencia --}}
             <div id="transfer-info" style="display:none; background:rgba(224,120,32,0.1); border:1px solid rgba(224,120,32,0.3); border-radius:8px; padding:1rem; margin-bottom:1.5rem;">
-                <p style="font-size:0.85rem; color:#F2E8D5; margin-bottom:0.75rem; line-height:1.5;">
-                    <strong style="color:#E07820;">Datos Bancarios:</strong><br>
-                    Banco: Bancolombia (Ahorros)<br>
-                    Cuenta: 123-456789-00<br>
-                    Titular: Mr. Sabor Burgers SAS<br>
-                    NIT: 900.123.456-7
-                </p>
+                <div style="display:flex; align-items:center; gap:1.5rem; margin-bottom:1.5rem; background:rgba(0,0,0,0.2); padding:1.25rem; border-radius:12px;">
+                    <!-- QR Placeholder -->
+                    <div style="width:130px; height:130px; background:#fff; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#1a1512; flex-shrink:0; box-shadow:0 4px 6px rgba(0,0,0,0.3); position:relative; padding: 4px;">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=BreB-123456789" alt="QR" style="width:100%; height:100%; object-fit:contain; border-radius:8px;">
+                        <div style="position:absolute; bottom:-22px; font-size:0.7rem; color:var(--primary-light); font-weight:700; text-align:center; width:100%; letter-spacing: 0.5px;">ESCANEAME</div>
+                    </div>
+                    
+                    <!-- Text Info -->
+                    <div style="font-size:0.95rem; color:#F2E8D5; line-height:1.7;">
+                        <div style="margin-bottom: 0.5rem;">
+                            <span style="color:#8A7460; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px;">Titular</span><br>
+                            <strong style="color:#E07820; font-size:1.1rem;">Mr. Sabor Burgers SAS</strong>
+                        </div>
+                        <div>
+                            <span style="color:#8A7460; font-size:0.8rem; text-transform:uppercase; letter-spacing:0.5px;">Llave BreB Bancaria</span><br>
+                            <strong style="color:#fff; font-size:1.15rem; letter-spacing: 1px;">310-263-2358</strong>
+                        </div>
+                    </div>
+                </div>
                 <label class="form-label">Sube tu comprobante (Foto o Captura) *</label>
                 <input type="file" name="payment_receipt" id="payment_receipt" class="form-input modal-input" accept="image/*" style="padding:0.5rem;">
-                <small style="color:#8A7460; font-size:0.75rem; display:block; margin-top:0.25rem;">Requerido para confirmar pedidos por transferencia.</small>
+                <small style="color:#8A7460; font-size:0.75rem; display:block; margin-top:0.25rem;">Requerido para confirmar. <strong style="color:#E07820;">Máximo 2MB</strong> (te sugerimos tomar captura de pantalla).</small>
             </div>
             
             <button type="submit" class="btn btn-primary btn-full" id="btn-submit-order" style="border:none; padding:1rem; font-size:1.1rem;">Confirmar y Pedir 🔥</button>
@@ -984,7 +1002,7 @@
 {{-- ══════════════════════════════════════════════════════════
      SECCIÓN "NOSOTROS" / INFO DEL LOCAL
 ══════════════════════════════════════════════════════════ --}}
-<section class="about-section" id="nosotros">
+<section class="about-section" id="nosotros" style="scroll-margin-top: 80px;">
     <div class="about-inner">
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center;">
             <div>
@@ -1049,18 +1067,50 @@
         <button class="auth-modal-close" onclick="closeAuthModal()">×</button>
         
         <!-- LOGIN FORM -->
+        @if(session('show_login_modal'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() { openAuthModal('login'); });
+            </script>
+        @endif
+        @if(session('show_register_modal'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() { openAuthModal('register'); });
+            </script>
+        @endif
         <div id="login-view">
             <h2 class="auth-modal-title">Iniciar Sesión</h2>
             <p class="auth-modal-subtitle">Entra para hacer tu pedido <i class="ph ph-fire"></i></p>
+            
+            @if ($errors->has('password') || ($errors->has('email') && !old('name')))
+                <div style="background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3); color: #fca5a5; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;">
+                    @if($errors->has('password'))
+                        {{ $errors->first('password') }}
+                    @else
+                        Credenciales incorrectas.
+                    @endif
+                </div>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() { openAuthModal('login'); });
+                </script>
+            @endif
+
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="form-group" style="margin-bottom: 1rem;">
                     <label class="form-label">Correo Electrónico</label>
                     <input type="email" name="email" class="form-input modal-input" required autofocus>
                 </div>
-                <div class="form-group" style="margin-bottom: 1.5rem;">
+                <div class="form-group" style="margin-bottom: 0.5rem;">
                     <label class="form-label">Contraseña</label>
-                    <input type="password" name="password" class="form-input modal-input" required>
+                    <div style="position: relative;">
+                        <input type="password" name="password" class="form-input modal-input" style="width: 100%; padding-right: 2.5rem;" required>
+                        <button type="button" class="toggle-password" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8A7460; cursor: pointer;">
+                            <i class="ph ph-eye" style="font-size: 1.2rem;"></i>
+                        </button>
+                    </div>
+                </div>
+                <div style="text-align:right; margin-bottom: 1.5rem;">
+                    <a onclick="toggleAuthView('forgot')" class="auth-toggle-link" style="font-size:0.8rem;">¿Olvidaste tu contraseña?</a>
                 </div>
                 <button type="submit" class="btn btn-primary btn-full" style="border:none;">Entrar</button>
             </form>
@@ -1069,30 +1119,127 @@
             </p>
         </div>
 
-        <!-- REGISTER FORM -->
-        <div id="register-view" style="display: none;">
-            <h2 class="auth-modal-title">Crear Cuenta</h2>
-            <p class="auth-modal-subtitle">Únete a la familia Mr. Sabor <i class="ph ph-hamburger"></i></p>
-            <form method="POST" action="{{ route('register') }}">
+        <!-- FORGOT PASSWORD FORM -->
+        @if(session('status') || $errors->has('email') && !old('name') && !old('password'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function() { openAuthModal('forgot'); });
+            </script>
+        @endif
+        <div id="forgot-view" style="display: none;">
+            <h2 class="auth-modal-title">Recuperar Contraseña</h2>
+            <p class="auth-modal-subtitle">Te enviaremos un enlace a tu correo para crear una nueva contraseña.</p>
+
+            @if (session('status'))
+                <div style="background: rgba(34,197,94,0.1); border: 1px solid rgba(34,197,94,0.3); color: #86efac; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; text-align: center;">
+                    @if(session('status') == 'We have emailed your password reset link.')
+                        Hemos enviado el enlace de recuperación a tu correo.
+                    @else
+                        {{ session('status') }}
+                    @endif
+                </div>
+            @endif
+
+            @if ($errors->has('email') && !old('name') && !old('password'))
+                <div style="background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3); color: #fca5a5; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;">
+                    {{ $errors->first('email') }}
+                </div>
+            @endif
+
+            <form method="POST" action="{{ route('password.email') }}">
                 @csrf
-                <div class="form-group" style="margin-bottom: 1rem;">
-                    <label class="form-label">Nombre</label>
-                    <input type="text" name="name" class="form-input modal-input" required>
-                </div>
-                <div class="form-group" style="margin-bottom: 1rem;">
-                    <label class="form-label">Correo Electrónico</label>
-                    <input type="email" name="email" class="form-input modal-input" required>
-                </div>
                 <div class="form-group" style="margin-bottom: 1.5rem;">
-                    <label class="form-label">Contraseña</label>
-                    <input type="password" name="password" class="form-input modal-input" required>
-                    <input type="hidden" name="password_confirmation" id="pass_confirm">
+                    <label class="form-label">Correo Electrónico</label>
+                    <input type="email" name="email" value="{{ old('email') }}" class="form-input modal-input" required autofocus>
                 </div>
-                <button type="submit" class="btn btn-primary btn-full" onclick="document.getElementById('pass_confirm').value = this.form.password.value" style="border:none;">Registrarse</button>
+                <button type="submit" class="btn btn-primary btn-full" style="border:none;">Enviar enlace de recuperación</button>
             </form>
             <p style="text-align:center; margin-top:1.5rem; font-size:0.85rem; color:#8A7460;">
-                ¿Ya tienes cuenta? <a onclick="toggleAuthView('login')" class="auth-toggle-link">Inicia Sesión</a>
+                <a onclick="toggleAuthView('login')" class="auth-toggle-link"><i class="ph ph-arrow-left"></i> Volver a Iniciar Sesión</a>
             </p>
+        </div>
+
+        <!-- REGISTER FORM -->
+        <div id="register-view" style="display: none;">
+            @if(session('show_otp_step'))
+                <h2 class="auth-modal-title">Código Enviado</h2>
+                <p class="auth-modal-subtitle">Ingresa el código que enviamos a tu correo para verificar tu identidad.</p>
+                
+                @if ($errors->has('otp'))
+                    <div style="background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3); color: #fca5a5; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;">
+                        {{ $errors->first('otp') }}
+                    </div>
+                @endif
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() { openAuthModal('register'); });
+                </script>
+
+                <form method="POST" action="{{ route('register.confirm') }}">
+                    @csrf
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label class="form-label">Código de 6 dígitos</label>
+                        <input type="text" name="code" class="form-input modal-input" placeholder="000000" maxlength="6" style="text-align:center; font-size:1.5rem; letter-spacing:10px;" required autofocus>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-full" style="border:none;">Verificar y Entrar</button>
+                </form>
+            @else
+                <h2 class="auth-modal-title">Crear Cuenta</h2>
+                <p class="auth-modal-subtitle">Únete a la familia Mr. Sabor <i class="ph ph-hamburger"></i></p>
+
+                @if ($errors->has('email_not_found'))
+                    <div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;">
+                        {{ $errors->first('email_not_found') }}
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() { openAuthModal('register'); });
+                    </script>
+                @elseif ($errors->any() && old('name'))
+                    <div style="background: rgba(220,38,38,0.1); border: 1px solid rgba(220,38,38,0.3); color: #fca5a5; padding: 0.75rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;">
+                        <ul style="margin: 0; padding-left: 1rem;">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() { openAuthModal('register'); });
+                    </script>
+                @endif
+
+                <form method="POST" action="{{ route('register.pre') }}">
+                    @csrf
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">Nombre</label>
+                        <input type="text" name="name" value="{{ old('name') }}" class="form-input modal-input" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1rem;">
+                        <label class="form-label">Correo Electrónico</label>
+                        <input type="email" name="email" value="{{ old('email') }}" class="form-input modal-input" required>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 1.5rem;">
+                        <label class="form-label">Contraseña</label>
+                        <div style="position: relative;">
+                            <input type="password" name="password" id="reg_password" class="form-input modal-input" style="width: 100%; padding-right: 2.5rem;" required>
+                            <button type="button" class="toggle-password" tabindex="-1" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8A7460; cursor: pointer;">
+                                <i class="ph ph-eye" style="font-size: 1.2rem;"></i>
+                            </button>
+                        </div>
+                        
+                        <!-- Barra de fuerza -->
+                        <div style="margin-top: 8px;">
+                            <div style="height: 6px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; display: flex;">
+                                <div id="strength-bar" style="height: 100%; width: 0%; transition: all 0.3s ease; background: #ef4444;"></div>
+                            </div>
+                            <div id="strength-text" style="font-size: 0.75rem; color: #8A7460; margin-top: 4px; text-align: right;">Ingresa una contraseña</div>
+                        </div>
+
+                        <input type="hidden" name="password_confirmation" id="pass_confirm">
+                    </div>
+                    <button type="submit" id="reg_submit_btn" class="btn btn-primary btn-full" onclick="document.getElementById('pass_confirm').value = this.form.password.value" style="border:none; opacity:0.5; cursor:not-allowed;" disabled>Registrarse</button>
+                </form>
+                <p style="text-align:center; margin-top:1.5rem; font-size:0.85rem; color:#8A7460;">
+                    ¿Ya tienes cuenta? <a onclick="toggleAuthView('login')" class="auth-toggle-link">Inicia Sesión</a>
+                </p>
+            @endif
         </div>
     </div>
 </div>
@@ -1101,13 +1248,85 @@
      JAVASCRIPT
 ══════════════════════════════════════════════════════════ --}}
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+    const passInput = document.getElementById('reg_password');
+    const strengthBar = document.getElementById('strength-bar');
+    const strengthText = document.getElementById('strength-text');
+    const submitBtn = document.getElementById('reg_submit_btn');
+
+    if(passInput) {
+        passInput.addEventListener('input', function() {
+            const val = passInput.value;
+            let score = 0;
+            
+            if (val.length > 0) {
+                if (val.length >= 8) score += 25; // Requisito mínimo
+                if (val.match(/[A-Z]/)) score += 25;
+                if (val.match(/[0-9]/)) score += 25;
+                if (val.match(/[^A-Za-z0-9]/)) score += 25;
+            }
+
+            if (val.length === 0) {
+                strengthBar.style.width = '0%';
+                strengthText.textContent = 'Ingresa una contraseña';
+                strengthText.style.color = '#8A7460';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+                submitBtn.style.cursor = 'not-allowed';
+            } else if (val.length < 8) {
+                // Siempre rojo si es menor de 8 porque Laravel la rechazará
+                strengthBar.style.width = '33%';
+                strengthBar.style.background = '#ef4444'; 
+                strengthText.textContent = 'Débil (Mínimo 8 caracteres)';
+                strengthText.style.color = '#ef4444';
+                submitBtn.disabled = true;
+                submitBtn.style.opacity = '0.5';
+                submitBtn.style.cursor = 'not-allowed';
+            } else if (score < 75) {
+                strengthBar.style.width = '66%';
+                strengthBar.style.background = '#eab308'; 
+                strengthText.textContent = 'Media (Puedes mejorarla)';
+                strengthText.style.color = '#eab308';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            } else {
+                strengthBar.style.width = '100%';
+                strengthBar.style.background = '#22c55e'; 
+                strengthText.textContent = '¡Excelente y segura!';
+                strengthText.style.color = '#22c55e';
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+                submitBtn.style.cursor = 'pointer';
+            }
+        });
+    }
+
+    // Toggle Eye icon global
+    document.querySelectorAll('.toggle-password').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const input = this.previousElementSibling;
+            const icon = this.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('ph-eye');
+                icon.classList.add('ph-eye-slash');
+                icon.style.color = '#E07820';
+            } else {
+                input.type = 'password';
+                icon.classList.remove('ph-eye-slash');
+                icon.classList.add('ph-eye');
+                icon.style.color = '#8A7460';
+            }
+        });
+    });
+});
+</script>
+<script>
+let isModalOpen = false;
+
 // ── Modal Auth ────────────────────────────────────────────
-function openCheckoutModal() {
-    document.getElementById('checkoutModalOverlay').classList.add('active');
-}
-function closeCheckoutModal() {
-    document.getElementById('checkoutModalOverlay').classList.remove('active');
-}
 function toggleTransferInfo() {
     const val = document.querySelector('input[name="payment_method"]:checked').value;
     document.getElementById('transfer-info').style.display = (val === 'transfer') ? 'block' : 'none';
@@ -1115,15 +1334,21 @@ function toggleTransferInfo() {
 }
 
 function openAuthModal(view = 'login') {
+    isModalOpen = true;
     toggleAuthView(view);
     document.getElementById('authModalOverlay').classList.add('active');
+    if(typeof recalc === 'function') recalc();
 }
 function closeAuthModal() {
+    isModalOpen = false;
     document.getElementById('authModalOverlay').classList.remove('active');
+    if(typeof recalc === 'function') recalc();
 }
 function toggleAuthView(view) {
     document.getElementById('login-view').style.display = view === 'login' ? 'block' : 'none';
     document.getElementById('register-view').style.display = view === 'register' ? 'block' : 'none';
+    const forgotView = document.getElementById('forgot-view');
+    if (forgotView) forgotView.style.display = view === 'forgot' ? 'block' : 'none';
 }
 
 // ── Cart Logic ────────────────────────────────────────────
@@ -1146,6 +1371,10 @@ const menuData = {
 
 const deliveryFee = {{ isset($deliveryFee) ? (float)$deliveryFee : 0 }};
 let qtys = {};
+try {
+    const savedCart = sessionStorage.getItem('mrsabor_cart');
+    if (savedCart) qtys = JSON.parse(savedCart);
+} catch (e) {}
 let totalItems = 0, totalPriceBase = 0;
 let deliveryMode = 'delivery';
 
@@ -1176,8 +1405,26 @@ function changeQty(id, delta) {
         }
     }
 
+    try { sessionStorage.setItem('mrsabor_cart', JSON.stringify(qtys)); } catch(e) {}
     recalc();
 }
+
+function initCartUI() {
+    for (const [id, q] of Object.entries(qtys)) {
+        if (q > 0) {
+            const display = document.getElementById('qty-display-' + id);
+            if (display) display.textContent = q;
+            
+            const card = document.querySelector(`.prod-card[data-id="${id}"]`);
+            if (card) {
+                card.style.borderColor = 'rgba(224,120,32,0.45)';
+                card.style.background  = 'rgba(224,120,32,0.05)';
+            }
+        }
+    }
+    recalc();
+}
+document.addEventListener('DOMContentLoaded', initCartUI);
 
 function recalc() {
     totalItems = 0; totalPriceBase = 0;
@@ -1198,7 +1445,17 @@ function recalc() {
         const fmt = barTotal >= 1000 ? '$' + (barTotal/1000).toFixed(1) + 'K' : '$' + barTotal.toFixed(0);
         document.getElementById('bar-total').textContent = deliveryMode === 'delivery' ? fmt + ' (Inc. Domicilio)' : fmt;
 
-        if (totalItems > 0) {
+        const navBadge = document.getElementById('nav-cart-badge');
+        if (navBadge) {
+            if (totalItems > 0) {
+                navBadge.textContent = totalItems;
+                navBadge.style.display = 'flex';
+            } else {
+                navBadge.style.display = 'none';
+            }
+        }
+
+        if (totalItems > 0 && !isModalOpen) {
             bar.style.display = 'flex';
             setTimeout(() => bar.style.opacity = '1', 10);
         } else {
@@ -1209,6 +1466,8 @@ function recalc() {
 }
 
 function openCheckoutModal() {
+    isModalOpen = true;
+    recalc();
     const container = document.getElementById('checkout-items-container');
     container.innerHTML = '';
     
@@ -1221,10 +1480,15 @@ function openCheckoutModal() {
             
             for(let i=0; i<q; i++) {
                 html += `
-                    <div class="checkout-cart-item" data-id="${id}" data-index="${itemIndex}" style="margin-bottom:1rem; padding:1rem; background:rgba(0,0,0,0.2); border-radius:8px; border:1px solid rgba(224,120,32,0.2);">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
-                            <span style="font-weight:700; color:#F2E8D5;">${product.name}</span>
-                            <span style="color:#E07820; font-weight:700;">$${(product.price / 1000).toFixed(1)}K</span>
+                    <div class="checkout-cart-item" id="checkout-item-${itemIndex}" data-id="${id}" data-index="${itemIndex}" style="margin-bottom:1rem; padding:1rem; background:rgba(0,0,0,0.2); border-radius:8px; border:1px solid rgba(224,120,32,0.2);">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:0.5rem;">
+                            <span style="font-weight:700; color:#F2E8D5; max-width:80%; line-height:1.2;">${product.name}</span>
+                            <div style="display:flex; align-items:center; gap:0.5rem;">
+                                <span style="color:#E07820; font-weight:700;">$${(product.price / 1000).toFixed(1)}K</span>
+                                <button type="button" onclick="removeCheckoutItem('${id}', ${itemIndex})" style="background:none; border:none; color:#ef4444; cursor:pointer; padding:0; display:flex; align-items:center;" title="Eliminar producto">
+                                    <i class="ph ph-trash" style="font-size:1.2rem; opacity:0.8; transition:0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'"></i>
+                                </button>
+                            </div>
                         </div>
                 `;
                 
@@ -1234,8 +1498,8 @@ function openCheckoutModal() {
                         html += `<div style="margin-top:0.5rem;"><div style="font-size:0.75rem; color:#8A7460; margin-bottom:0.2rem; text-transform:uppercase;">Quitar:</div>`;
                         product.custom.removable.forEach(rem => {
                             html += `
-                                <label style="display:inline-flex; align-items:center; gap:0.3rem; margin-right:0.75rem; color:#F2E8D5; font-size:0.8rem; cursor:pointer;">
-                                    <input type="checkbox" class="chk-removable" data-item="${itemIndex}" value="${rem}">
+                                <label style="display:inline-flex; align-items:center; gap:0.4rem; margin-right:1rem; color:#F2E8D5; font-size:0.85rem; cursor:pointer;">
+                                    <input type="checkbox" class="chk-removable mr-checkbox" data-item="${itemIndex}" value="${rem}">
                                     <span>${rem}</span>
                                 </label>
                             `;
@@ -1247,9 +1511,9 @@ function openCheckoutModal() {
                         html += `<div style="margin-top:0.5rem;"><div style="font-size:0.75rem; color:#8A7460; margin-bottom:0.2rem; text-transform:uppercase;">Adiciones:</div>`;
                         product.custom.extras.forEach(ext => {
                             html += `
-                                <label style="display:flex; align-items:center; gap:0.5rem; color:#F2E8D5; font-size:0.8rem; cursor:pointer; margin-bottom:0.3rem;">
-                                    <input type="checkbox" class="chk-extra" data-item="${itemIndex}" data-price="${ext.price}" data-name="${ext.name}" onchange="updateCheckoutTotal()">
-                                    <span>${ext.name} (+$${ext.price})</span>
+                                <label style="display:flex; align-items:center; gap:0.5rem; color:#F2E8D5; font-size:0.85rem; cursor:pointer; margin-bottom:0.4rem;">
+                                    <input type="checkbox" class="chk-extra mr-checkbox" data-item="${itemIndex}" data-price="${ext.price}" data-name="${ext.name}" onchange="updateCheckoutTotal()">
+                                    <span>${ext.name} <strong style="color:var(--primary-light); font-weight:600;">(+$${ext.price})</strong></span>
                                 </label>
                             `;
                         });
@@ -1266,7 +1530,44 @@ function openCheckoutModal() {
     container.innerHTML = html;
     updateCheckoutTotal();
     
+    // El carrito ya no se limpia aquí para evitar que se pierda si falla la validación del backend.
+    // Se limpiará en la página de mis-pedidos cuando la orden se cree exitosamente.
+    
     document.getElementById('checkoutModalOverlay').classList.add('active');
+}
+
+function removeCheckoutItem(id, itemIndex) {
+    if (qtys[id] > 0) {
+        qtys[id]--;
+        
+        const display = document.getElementById('qty-display-' + id);
+        if (display) display.textContent = qtys[id];
+        
+        if (qtys[id] === 0) {
+            const card = document.querySelector(`.prod-card[data-id="${id}"]`);
+            if (card) {
+                card.style.borderColor = '';
+                card.style.background  = '';
+            }
+        }
+        
+        try { sessionStorage.setItem('mrsabor_cart', JSON.stringify(qtys)); } catch(e) {}
+        
+        recalc();
+        
+        const itemElement = document.getElementById('checkout-item-' + itemIndex);
+        if (itemElement) {
+            itemElement.style.transition = 'opacity 0.3s ease';
+            itemElement.style.opacity = '0';
+            setTimeout(() => {
+                itemElement.remove();
+                updateCheckoutTotal();
+                if (totalItems === 0) {
+                    closeCheckoutModal();
+                }
+            }, 300);
+        }
+    }
 }
 
 function updateCheckoutTotal() {
@@ -1312,7 +1613,9 @@ function toggleDeliveryMode(mode) {
 }
 
 function closeCheckoutModal() {
+    isModalOpen = false;
     document.getElementById('checkoutModalOverlay').classList.remove('active');
+    recalc();
 }
 
 document.getElementById('order-form')?.addEventListener('submit', function(e) {
@@ -1335,12 +1638,27 @@ document.getElementById('order-form')?.addEventListener('submit', function(e) {
 
     let pm = document.querySelector('input[name="payment_method"]:checked')?.value;
     if (pm === 'transfer') {
-        let file = document.getElementById('payment_receipt').files.length;
-        if (file === 0) {
+        let fileInput = document.getElementById('payment_receipt');
+        if (fileInput.files.length === 0) {
             e.preventDefault();
             alert('Debes adjuntar el comprobante de transferencia para continuar.');
             return false;
         }
+        
+        // Validación de tamaño de archivo (Max 2MB para evitar errores de servidor)
+        let file = fileInput.files[0];
+        if (file && file.size > 2 * 1024 * 1024) {
+            e.preventDefault();
+            alert('¡El comprobante es muy pesado! Tu foto pesa más de 2MB.\n\nPor favor, toma una captura de pantalla al comprobante y sube la captura (pesan mucho menos).');
+            return false;
+        }
+    }
+    
+    // Evitar múltiples envíos
+    const submitBtn = document.getElementById('btn-submit-order');
+    if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = 'Procesando... <i class="ph ph-spinner ph-spin"></i>';
     }
 
     if (totalItems === 0) {
@@ -1483,7 +1801,64 @@ function closeProductModal() {
 
     sections.forEach(s => s && obs.observe(s));
 })();
+
+// ── Scroll Suave General (Navbar) ───────────
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        if (this.classList.contains('cat-pill')) return;
+        
+        let targetId = this.getAttribute('href');
+        
+        // Si quieren ir al menú, los llevamos directamente a la primera categoría (Hamburguesas)
+        if (targetId === '#menu') {
+            const firstPill = document.querySelector('.cat-pill');
+            if (firstPill) {
+                targetId = '#cat-' + firstPill.dataset.cat;
+            }
+        }
+        
+        if (targetId && targetId.length > 1 && targetId.startsWith('#')) {
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                e.preventDefault();
+                // 70px (nav) + 60px (barra de categorías) = 130px de offset para que no se tape
+                const headerOffset = 130; 
+                const elementPosition = targetElement.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        }
+    });
+});
 </script>
+
+@if ($errors->any() && !old('email'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const errorMsg = {!! json_encode(implode('\n', $errors->all())) !!};
+        alert('Hubo un problema al procesar tu pedido:\n' + errorMsg);
+        
+        // Si hay carrito, abrimos el modal de nuevo para que intenten
+        setTimeout(() => {
+            if (Object.keys(qtys || {}).length > 0) {
+                openCheckoutModal();
+            }
+        }, 500);
+    });
+</script>
+@endif
+
+@if (session('error'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        alert({!! json_encode(session('error')) !!});
+    });
+</script>
+@endif
 
 </body>
 </html>

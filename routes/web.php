@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [LandingController::class, 'index']);
 Route::get('/promociones/{promotion}', [LandingController::class, 'showPromotion'])->name('promotions.show');
 Route::post('/api/menu-items/{id}/view', [LandingController::class, 'trackView']);
+Route::post('/register/pre-verify', [LandingController::class, 'preVerify'])->name('register.pre');
+Route::post('/register/confirm', [LandingController::class, 'confirmRegister'])->name('register.confirm');
 
 // ── CLIENTE (autenticado) ─────────────────────────────────────
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -57,6 +59,9 @@ Route::middleware(['auth', 'is.admin'])
         Route::get('orders',                     [Admin\OrderController::class, 'index'])->name('orders.index');
         Route::get('orders/{order}',             [Admin\OrderController::class, 'show'])->name('orders.show');
         Route::patch('orders/{order}/status',    [Admin\OrderController::class, 'updateStatus'])->name('orders.status');
+        
+        // API Interna para notificaciones en vivo
+        Route::get('api/pending-orders',         [Admin\OrderController::class, 'getPendingOrdersCount']);
     });
 
 require __DIR__.'/auth.php';

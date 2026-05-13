@@ -64,24 +64,27 @@ body {
 .text-muted  { color: var(--text-muted); }
 
 /* ============================================================
-   NAVBAR
+   NAVBAR UNIFICADO (LP-NAV)
 ============================================================ */
-.navbar {
-    background: rgba(14,10,6,0.96);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border);
-    padding: 0.85rem 2rem;
+.lp-nav {
+    position: fixed; 
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    height: 70px;
+    background: rgba(14,10,6,0.95);
+    border-bottom: 1px solid rgba(224,160,80,0.25); /* Bordes / contornos en la parte inferior */
     display: flex;
     align-items: center;
     justify-content: space-between;
-    position: sticky;
-    top: 0;
-    z-index: 200;
-    gap: 1rem;
+    padding: 0 2rem;
+    transition: background 0.3s;
+}
+.lp-nav.scrolled { 
+    background: rgba(14,10,6,0.99); 
+    border-bottom: 1px solid rgba(224,160,80,0.4);
 }
 
-.navbar-brand {
+.lp-nav-brand {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -119,43 +122,39 @@ body {
     letter-spacing: 1px;
 }
 
-.navbar-nav {
+.lp-nav-links {
     display: flex;
-    align-items: center;
-    gap: 0.25rem;
+    gap: 0;
     list-style: none;
 }
 
-.navbar-nav a {
-    color: var(--text-mid);
+.lp-nav-links a {
+    display: block;
+    padding: 0.5rem 1.1rem;
+    color: rgba(242,232,213,0.7);
     text-decoration: none;
-    padding: 0.5rem 0.9rem;
-    border-radius: var(--radius-xs);
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 500;
-    transition: all 0.25s ease;
+    transition: color 0.25s;
     white-space: nowrap;
 }
 
-.navbar-nav a:hover,
-.navbar-nav a.active {
-    color: var(--text-light);
-    background: rgba(224,120,32,0.12);
+.lp-nav-links a:hover,
+.lp-nav-links a.active { 
+    color: #F2E8D5; 
 }
 
-.navbar-user {
+.lp-nav-right {
     display: flex;
-    align-items: center;
     gap: 0.75rem;
-    flex-shrink: 0;
+    align-items: center;
 }
 
-.user-greeting {
-    font-size: 0.83rem;
+.user-greeting-nav {
+    font-size: 0.85rem;
     color: var(--text-muted);
 }
-
-.user-greeting strong { color: var(--primary-light); }
+.user-greeting-nav strong { color: #F2E8D5; }
 
 /* ============================================================
    BUTTONS

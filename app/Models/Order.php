@@ -30,12 +30,12 @@ class Order extends Model
     ];
 
     const STATUS_ICONS = [
-        'pending_payment' => '💳',
-        'pending'   => '⏳',
-        'preparing' => '🔥',
-        'on_way'    => '🚀',
-        'delivered' => '✅',
-        'cancelled' => '🚫',
+        'pending_payment' => 'credit-card',
+        'pending'   => 'hourglass-high',
+        'preparing' => 'cooking-pot',
+        'on_way'    => 'rocket',
+        'delivered' => 'check-circle',
+        'cancelled' => 'prohibit',
     ];
 
     const STATUS_FLOW = ['pending_payment', 'pending', 'preparing', 'on_way', 'delivered'];

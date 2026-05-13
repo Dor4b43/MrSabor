@@ -250,8 +250,9 @@
 
         /* status timeline */
         .status-timeline {
-            display: flex;
-            align-items: center;
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            align-items: start;
             gap: 0;
             margin: 1.5rem 0;
         }
@@ -259,8 +260,8 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            flex: 1;
             position: relative;
+            min-width: 0; /* previene que el contenido expanda la columna */
         }
         .st-step::before {
             content: '';
@@ -271,6 +272,9 @@
             height: 3px;
             background: var(--border);
             z-index: 0;
+        }
+        .st-step.completed::before {
+            background: #6dc558;
         }
         .st-step:last-child::before { display: none; }
         .st-dot {
@@ -286,7 +290,15 @@
         }
         .st-dot.done   { background: rgba(109,197,88,0.2); border-color: #6dc558; }
         .st-dot.active { background: rgba(224,120,32,0.2); border-color: var(--primary); box-shadow: 0 0 15px rgba(224,120,32,0.3); }
-        .st-label { font-size: 0.72rem; color: var(--text-muted); margin-top: 0.5rem; text-align: center; font-weight: 600; }
+        .st-label { 
+            font-size: 0.72rem; 
+            color: var(--text-muted); 
+            margin-top: 0.5rem; 
+            text-align: center; 
+            font-weight: 600; 
+            word-wrap: break-word;
+            width: 100%;
+        }
         .st-line-done { background: #6dc558 !important; }
 
         /* Responsive */
@@ -398,10 +410,10 @@
 
         <div class="admin-body">
             @if(session('success'))
-                <div class="flash-msg flash-success">✅ {{ session('success') }}</div>
+                <div class="flash-msg flash-success"><i class="ph ph-check-circle"></i> {{ session('success') }}</div>
             @endif
             @if(session('error'))
-                <div class="flash-msg flash-error">❌ {{ session('error') }}</div>
+                <div class="flash-msg flash-error"><i class="ph ph-warning-circle"></i> {{ session('error') }}</div>
             @endif
 
             @yield('content')

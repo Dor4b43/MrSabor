@@ -71,7 +71,7 @@
     {{-- Pedidos recientes --}}
     <div class="admin-card" style="grid-column:1 / -1;">
         <div class="admin-card-header">
-            <span class="admin-card-title">📦 Pedidos Recientes</span>
+            <span class="admin-card-title"><i class="ph ph-package" style="margin-right:6px; color:var(--primary-light);"></i> Pedidos Recientes</span>
             <a href="{{ route('admin.orders.index') }}" class="btn btn-ghost btn-sm">Ver todos</a>
         </div>
         <div style="overflow-x:auto;">
@@ -98,9 +98,15 @@
                             <td style="color:var(--text-muted);">#{{ $order->id }}</td>
                             <td style="color:var(--text-light); font-weight:600;">{{ $order->user->name }}</td>
                             <td>
-                                <span class="badge badge-{{ $order->status_color }}">
-                                    {{ $order->status_icon }} {{ $order->status_label }}
-                                </span>
+                                <select onchange="updateOrderStatus({{ $order->id }}, this.value, this)"
+                                        style="background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-light); padding:0.25rem 0.5rem; border-radius:6px; font-size:0.75rem; cursor:pointer; font-family:'Poppins',sans-serif;">
+                                    <option value="pending_payment" {{ $order->status === 'pending_payment' ? 'selected' : '' }}>Pend. Pago</option>
+                                    <option value="pending"   {{ $order->status === 'pending'   ? 'selected' : '' }}>Pendiente</option>
+                                    <option value="preparing" {{ $order->status === 'preparing' ? 'selected' : '' }}>En Preparación</option>
+                                    <option value="on_way"    {{ $order->status === 'on_way'    ? 'selected' : '' }}>En Camino</option>
+                                    <option value="delivered" {{ $order->status === 'delivered' ? 'selected' : '' }}>Entregado</option>
+                                </select>
+                                <span id="status-spinner-{{ $order->id }}" style="display:none; font-size:12px; margin-left:4px;"><i class="ph ph-spinner ph-spin"></i></span>
                             </td>
                             <td style="color:var(--primary-light); font-weight:700;">{{ $order->total_formatted }}</td>
                             <td>{{ $order->created_at->diffForHumans() }}</td>
@@ -135,5 +141,90 @@
         </div>
     </div>
 </div>
+
+<script>
+    // 1. CAMBIO RÁPIDO DE ESTADO VÍA AJAX
+    function updateOrderStatus(orderId, status, selectElement) {
+        const spinner = document.getElementById('status-spinner-' + orderId);
+        spinner.style.display = 'inline-block';
+        selectElement.disabled = true;
+
+        fetch(`/admin/orders/${orderId}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ status: status })
+        })
+        .then(response => response.json())
+        .then(data => {
+            spinner.style.display = 'none';
+            selectElement.disabled = false;
+            if (data.success) {
+                // Podríamos cambiar un badge si existiera, pero ahora es un select
+                // Efecto visual de éxito
+                selectElement.style.borderColor = '#4ade80';
+                setTimeout(() => selectElement.style.borderColor = 'var(--border)', 1500);
+            }
+        })
+        .catch(error => {
+            spinner.style.display = 'none';
+            selectElement.disabled = false;
+            alert('Error al actualizar el estado.');
+        });
+    }
+
+    // 2. NOTIFICACIONES SONORAS (POLLING)
+    // Usaremos Web Audio API para generar un "Ding" de campana sin necesidad de archivos externos
+    function playDingSound() {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Oscilador 1: Tono principal (campana aguda)
+        const osc1 = audioCtx.createOscillator();
+        const gain1 = audioCtx.createGain();
+        osc1.type = 'sine';
+        osc1.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+        gain1.gain.setValueAtTime(0.5, audioCtx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+        osc1.connect(gain1);
+        gain1.connect(audioCtx.destination);
+        
+        // Oscilador 2: Armónico
+        const osc2 = audioCtx.createOscillator();
+        const gain2 = audioCtx.createGain();
+        osc2.type = 'sine';
+        osc2.frequency.setValueAtTime(1760, audioCtx.currentTime); // A6
+        gain2.gain.setValueAtTime(0.2, audioCtx.currentTime);
+        gain2.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1);
+        osc2.connect(gain2);
+        gain2.connect(audioCtx.destination);
+
+        osc1.start(); osc1.stop(audioCtx.currentTime + 1.5);
+        osc2.start(); osc2.stop(audioCtx.currentTime + 1);
+    }
+
+    let lastOrderId = {{ $recent_orders->first()->id ?? 'null' }};
+    
+    // Revisar cada 15 segundos
+    setInterval(() => {
+        fetch('/admin/api/pending-orders')
+            .then(res => res.json())
+            .then(data => {
+                if (data.latest_id && lastOrderId !== null && data.latest_id > lastOrderId) {
+                    playDingSound();
+                    lastOrderId = data.latest_id;
+                    
+                    // Notificación en pantalla o recarga suave
+                    // Recargamos la página para que el administrador vea el nuevo pedido
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                }
+            })
+            .catch(err => console.error('Error verificando pedidos', err));
+    }, 15000);
+</script>
 
 @endsection

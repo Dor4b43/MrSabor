@@ -3,9 +3,9 @@
 
     {{-- ══ BIENVENIDA ══ --}}
     <div class="welcome-card">
-        <div class="welcome-avatar">🔥</div>
+        <div class="welcome-avatar"><i class="ph ph-hand-waving" style="color: white;"></i></div>
         <div class="welcome-text">
-            <h2>¡Hola, {{ Auth::user()->name }}! 👋</h2>
+            <h2>¡Hola, {{ Auth::user()->name }}!</h2>
             <p>Bienvenido a Mr. Sabor Burgers &mdash; ¿Qué se te antoja hoy?</p>
         </div>
     </div>
@@ -13,22 +13,22 @@
     {{-- ══ STATS ══ --}}
     <div class="stat-grid">
         <div class="stat-card orange">
-            <div class="stat-icon">🛒</div>
+            <div class="stat-icon"><i class="ph ph-shopping-bag" style="color: var(--primary);"></i></div>
             <div class="stat-value">0</div>
             <div class="stat-label">Pedidos realizados</div>
         </div>
         <div class="stat-card amber">
-            <div class="stat-icon">⭐</div>
+            <div class="stat-icon"><i class="ph ph-star" style="color: var(--accent);"></i></div>
             <div class="stat-value">0</div>
             <div class="stat-label">Puntos acumulados</div>
         </div>
         <div class="stat-card green">
-            <div class="stat-icon">🎁</div>
+            <div class="stat-icon"><i class="ph ph-gift" style="color: #6dc558;"></i></div>
             <div class="stat-value">1</div>
             <div class="stat-label">Cupón de bienvenida</div>
         </div>
         <div class="stat-card red">
-            <div class="stat-icon">❤️</div>
+            <div class="stat-icon"><i class="ph ph-heart" style="color: #e05252;"></i></div>
             <div class="stat-value">0</div>
             <div class="stat-label">Favoritos</div>
         </div>
